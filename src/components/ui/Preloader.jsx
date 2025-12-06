@@ -1,35 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const Preloader = ({ onComplete }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Random progress increment logic
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        // Add random amount between 1 and 4
-        const increment = Math.floor(Math.random() * 4) + 1;
-        const next = prev + increment;
-        
-        if (next >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return next;
-      });
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Trigger completion callback when progress hits 100
-  useEffect(() => {
-    if (progress === 100) {
-      setTimeout(() => {
+    // If we've reached 100%, handle completion
+    if (progress >= 100) {
+      const timer = setTimeout(() => {
         onComplete();
-      }, 700); // 700ms delay before unmounting
+      }, 700); // 700ms delay at 100% before unmounting
+      return () => clearTimeout(timer);
     }
+
+    // "Self-healing" progress logic
+    // This runs every time 'progress' changes, ensuring it never freezes.
+    const timer = setTimeout(() => {
+      setProgress((prev) => {
+        // Random increment between 1 and 5
+        const increment = Math.floor(Math.random() * 5) + 1;
+        // Ensure we don't exceed 100
+        return Math.min(prev + increment, 100);
+      });
+    }, 40); // 40ms speed
+
+    return () => clearTimeout(timer);
   }, [progress, onComplete]);
 
   return (

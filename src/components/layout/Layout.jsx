@@ -5,7 +5,8 @@ import Preloader from '../ui/Preloader';
 import Navbar from './Navbar';
 import SocialSidebar from './SocialSidebar';
 import Footer from './Footer';
-import Spotlight from '../ui/Spotlight'; // Import Spotlight
+import Spotlight from '../ui/Spotlight';
+import ChatWidget from '../chat/ChatWidget'; // ADDED THIS IMPORT
 
 const Layout = ({ children }) => {
   const [loading, setLoading] = useState(true);
@@ -24,8 +25,8 @@ const Layout = ({ children }) => {
             transition={{ duration: 2, ease: "easeOut" }}
          >
             <Background />
-            <Spotlight /> {/* Mouse Light */}
-            <div className="bg-grain"></div> {/* Texture */}
+            <Spotlight />
+            <div className="bg-grain"></div>
          </motion.div>
       )}
 
@@ -44,6 +45,9 @@ const Layout = ({ children }) => {
           </motion.main>
 
           <Footer />
+          
+          {/* ADDED: ChatWidget inside the !loading block */}
+          <ChatWidget />
         </>
       )}
     </div>
