@@ -19,19 +19,16 @@ const useGitHub = () => {
   useEffect(() => {
     const fetchRepos = async () => {
       try {
-        // Fetch all repos in parallel
-        const repoRequests = REPO_NAMES.map(name => 
-          axios.get(`https://api.github.com/repos/${GITHUB_USERNAME}/${name}`)
-        );
-
-        const results = await Promise.allSettled(repoRequests);
-        
-        const validData = results
-          .filter(result => result.status === 'fulfilled')
-          .map(result => {
-            const repo = result.value.data;
+        const promises = REPO_NAMES.map(async (repoName) => {
+          try {
+            // 1. Fetch Repo Info
+            const { data: repo } = await axios.get(`https://api.github.com/repos/${GITHUB_USERNAME}/${repoName}`);
             
-            // Genre Detection Logic
+            // 2. Fetch Languages
+            const { data: langs } = await axios.get(repo.languages_url);
+            const languages = Object.keys(langs); // Get array of language names
+
+            // Genre Detection
             let genre = 'code';
             const lowerName = repo.name.toLowerCase();
             if (lowerName.includes('music')) genre = 'music';
@@ -47,11 +44,17 @@ const useGitHub = () => {
               url: repo.html_url,
               demo: repo.homepage,
               stars: repo.stargazers_count,
-              language: repo.language,
-              topics: repo.topics || [], // Fetch topics/tags
+              languages: languages, // Now contains ["HTML", "CSS", "JavaScript"] etc.
               genre: genre
             };
-          });
+          } catch (err) {
+            console.warn(`Failed to fetch ${repoName}`, err);
+            return null;
+          }
+        });
+
+        const results = await Promise.all(promises);
+        const validData = results.filter(Boolean); // Filter out nulls
 
         if (validData.length === 0) {
           setError("No projects found or API limit reached.");

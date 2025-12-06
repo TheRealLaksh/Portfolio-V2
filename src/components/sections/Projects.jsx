@@ -1,21 +1,19 @@
 import React from 'react';
 import useGitHub from '../../hooks/useGitHub';
-import { FiGithub, FiExternalLink } from 'react-icons/fi';
+import { FiGithub, FiExternalLink, FiMusic, FiPenTool, FiCalendar, FiShoppingCart, FiTv, FiCode } from 'react-icons/fi';
 
-// Username for the bottom button
 const GITHUB_USERNAME = 'TheRealLaksh';
 
-// SVG Paths from your script
 const genreIcons = {
-  code: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />,
-  art: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />,
-  calendar: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />,
-  music: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />,
-  shop: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />,
-  tv: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+  music: <FiMusic size={20} />,
+  art: <FiPenTool size={20} />,
+  calendar: <FiCalendar size={20} />,
+  shop: <FiShoppingCart size={20} />,
+  tv: <FiTv size={20} />,
+  code: <FiCode size={20} />
 };
 
-// Language Badge Colors
+// Color mapping for language badges
 const langColors = {
   JavaScript: "text-yellow-300 bg-yellow-500/10 border-yellow-500/20",
   HTML: "text-orange-300 bg-orange-500/10 border-orange-500/20",
@@ -25,7 +23,8 @@ const langColors = {
   Vue: "text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
   React: "text-sky-300 bg-sky-500/10 border-sky-500/20",
   Java: "text-red-300 bg-red-500/10 border-red-500/20",
-  default: "text-zinc-300 bg-zinc-800/80 border-zinc-700/50"
+  Shell: "text-green-300 bg-green-500/10 border-green-500/20",
+  default: "text-zinc-300 bg-zinc-800/50 border-zinc-700/50"
 };
 
 const Projects = () => {
@@ -44,69 +43,73 @@ const Projects = () => {
         {/* Grid */}
         <div id="github-projects-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-[1600px] mx-auto">
           
+          {/* Loading State */}
           {loading && (
-            <p className="text-slate-400 col-span-full text-center animate-pulse">Loading neural interface...</p>
+            <p className="text-slate-400 col-span-full text-center animate-pulse font-mono">Loading neural interface...</p>
           )}
 
+          {/* Error State */}
           {error && (
             <p className="text-red-400 col-span-full text-center">⚠️ {error}</p>
           )}
 
+          {/* Project Cards */}
           {!loading && !error && projects.map((repo, index) => {
-             const iconSvg = genreIcons[repo.genre] || genreIcons.code;
-             
-             // Determine languages to display (max 3)
-             // Note: useGitHub hook needs to return `languages` array or `language` string
-             // Assuming repo object has { language: "JavaScript" } or similar based on previous hook code.
-             // If you want exact multi-language support, the hook needs to fetch the /languages endpoint.
-             // For now, we wrap the single primary language in an array.
-             const langs = repo.languages || (repo.language ? [repo.language] : ["Code"]);
+             const Icon = genreIcons[repo.genre] || genreIcons.code;
+             const languages = repo.languages.length > 0 ? repo.languages : ["Code"];
 
              return (
               <div 
                 key={repo.id} 
-                className="group relative flex flex-col h-full bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:border-zinc-600 hover:shadow-2xl hover:-translate-y-1"
+                className="group relative flex flex-col h-full bg-[#050505] border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:border-zinc-600 hover:shadow-2xl hover:-translate-y-1"
                 data-aos="fade-up"
                 data-aos-delay={index * 100}
               >
                 <div className="p-6 flex flex-col flex-grow">
 
-                  {/* Header Row */}
-                  <div className="flex justify-between items-start mb-5">
-                    {/* Genre Icon */}
-                    <div className="p-2.5 bg-zinc-950 rounded-xl border border-zinc-800 text-zinc-400 group-hover:text-white group-hover:border-zinc-600 transition-all duration-300">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        {iconSvg}
-                      </svg>
+                  {/* Header Row: Icon Left, Buttons Right */}
+                  <div className="flex justify-between items-center mb-6">
+                    
+                    {/* Genre Icon Circle */}
+                    <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:border-zinc-600 transition-colors">
+                      {Icon}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-3 items-center h-10">
+                    {/* Action Buttons - Updated to match SocialSidebar styling */}
+                    <div className="flex gap-3">
                       
-                      {/* Live Demo Button */}
+                      {/* Live Demo (Emerald Theme) */}
                       {repo.demo && (
-                        <a href={repo.demo} target="_blank" rel="noopener noreferrer"
-                          className="group/btn relative flex items-center justify-start w-10 hover:w-28 h-10 bg-slate-800/50 border border-slate-700 rounded-full overflow-hidden transition-all duration-500 ease-out hover:border-emerald-500/50 shadow-lg hover:shadow-emerald-900/20"
+                        <a 
+                          href={repo.demo} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          aria-label="Live Demo"
+                          className="group/btn relative flex items-center justify-start w-10 hover:w-28 h-10 rounded-full overflow-hidden transition-all duration-500 ease-out bg-transparent border border-transparent hover:bg-slate-800 hover:border-slate-700 hover:shadow-lg hover:shadow-emerald-900/20"
                         >
                           <div className="absolute inset-0 w-full h-full bg-emerald-500/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
-                          <div className="w-10 h-10 flex items-center justify-center shrink-0 z-10 group-hover/btn:text-emerald-400 text-slate-400 transition-colors duration-300">
-                            <FiExternalLink size={20} />
+                          <div className="w-10 h-10 flex items-center justify-center shrink-0 z-10 text-slate-400 group-hover/btn:text-emerald-400 transition-colors duration-300">
+                            <FiExternalLink size={18} />
                           </div>
-                          <span className="opacity-0 group-hover/btn:opacity-100 text-emerald-400 font-medium text-xs whitespace-nowrap transition-all duration-500 delay-100 absolute left-10">
+                          <span className="opacity-0 group-hover/btn:opacity-100 text-emerald-400 font-medium text-xs whitespace-nowrap transition-all duration-500 delay-100 absolute left-10 pl-1">
                             Live Demo
                           </span>
                         </a>
                       )}
 
-                      {/* Code Button */}
-                      <a href={repo.url} target="_blank" rel="noopener noreferrer"
-                        className="group/btn relative flex items-center justify-start w-10 hover:w-24 h-10 bg-slate-800/50 border border-slate-700 rounded-full overflow-hidden transition-all duration-500 ease-out hover:border-green-500/50 shadow-lg hover:shadow-green-900/20"
+                      {/* Code (Green/GitHub Theme) */}
+                      <a 
+                        href={repo.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        aria-label="View Code"
+                        className="group/btn relative flex items-center justify-start w-10 hover:w-24 h-10 rounded-full overflow-hidden transition-all duration-500 ease-out bg-transparent border border-transparent hover:bg-slate-800 hover:border-slate-700 hover:shadow-lg hover:shadow-green-900/20"
                       >
                         <div className="absolute inset-0 w-full h-full bg-green-500/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
-                        <div className="w-10 h-10 flex items-center justify-center shrink-0 z-10 group-hover/btn:text-green-400 text-slate-400 transition-colors duration-300">
-                          <FiGithub size={20} />
+                        <div className="w-10 h-10 flex items-center justify-center shrink-0 z-10 text-slate-400 group-hover/btn:text-green-400 transition-colors duration-300">
+                          <FiGithub size={18} />
                         </div>
-                        <span className="opacity-0 group-hover/btn:opacity-100 text-green-400 font-medium text-xs whitespace-nowrap transition-all duration-500 delay-100 absolute left-10">
+                        <span className="opacity-0 group-hover/btn:opacity-100 text-green-400 font-medium text-xs whitespace-nowrap transition-all duration-500 delay-100 absolute left-10 pl-1">
                           Code
                         </span>
                       </a>
@@ -115,30 +118,26 @@ const Projects = () => {
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg font-bold text-white mb-3 tracking-tight group-hover:text-sky-100 transition-colors">
+                  <h3 className="text-xl font-bold text-white mb-3 tracking-tight group-hover:text-sky-200 transition-colors">
                     {repo.name}
                   </h3>
 
                   {/* Description */}
-                  <p className="text-sm text-zinc-300 leading-relaxed font-light opacity-90 flex-grow">
+                  <p className="text-sm text-zinc-400 leading-relaxed font-light flex-grow mb-6">
                     {repo.description}
                   </p>
 
-                  {/* Language Badges */}
-                  <div className="mt-6 pt-4 border-t border-zinc-800/60 flex items-center justify-between">
-                    <div className="flex gap-2 flex-wrap">
-                      {langs.slice(0, 3).map((lang, i) => {
+                  {/* Language Badges - Dynamic List */}
+                  <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-zinc-900">
+                    {languages.map((lang, i) => {
+                         // Get specific color for this language or use default
                          const colorClass = langColors[lang] || langColors.default;
                          return (
-                           <span key={i} className={`text-[10px] font-medium px-2 py-1 rounded border ${colorClass}`}>
+                           <span key={i} className={`text-[10px] font-semibold px-3 py-1 rounded-md border ${colorClass}`}>
                              {lang}
                            </span>
                          );
-                      })}
-                    </div>
-                    <div className="flex items-center gap-1 text-zinc-600 text-xs">
-                      <span>⭐ {repo.stars}</span>
-                    </div>
+                    })}
                   </div>
 
                 </div>
