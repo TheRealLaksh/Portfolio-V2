@@ -20,27 +20,15 @@ body {
 ::-webkit-scrollbar {
   width: 8px;
 }
-
 ::-webkit-scrollbar-track {
   background: #050505;
 }
-
 ::-webkit-scrollbar-thumb {
   background: #334155;
   border-radius: 4px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: #475569;
-}
-
-/* Spotlight Effect Utility */
-.spotlight {
-  background: radial-gradient(
-    circle at center,
-    rgba(255, 255, 255, 0.03) 0%,
-    transparent 70%
-  );
 }
 
 /* Glassmorphism Utilities */
@@ -52,14 +40,16 @@ body {
   @apply bg-slate-900/40 backdrop-blur-sm border border-white/5;
 }
 
-/* Footer Text Animation */
-@keyframes footer-text-anim {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; text-shadow: 0 0 20px rgba(14, 165, 233, 0.5); }
-}
-
-/* Chatbot Typing Indicator */
-@keyframes typing {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(0.5); opacity: 0.5; }
-}
+/* --- GLOW CLASSES FOR SKILLS --- */
+.group:hover .glow-python { @apply border-sky-500/50 shadow-[0_0_20px_rgba(56,189,248,0.2)]; }
+.group:hover .glow-django { @apply border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.2)]; }
+.group:hover .glow-js { @apply border-yellow-400/50 shadow-[0_0_20px_rgba(250,204,21,0.2)]; }
+.group:hover .glow-html { @apply border-orange-500/50 shadow-[0_0_20px_rgba(249,115,22,0.2)]; }
+.group:hover .glow-css { @apply border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.2)]; }
+.group:hover .glow-firebase { @apply border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.2)]; }
+.group:hover .glow-kali { @apply border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.2)]; }
+.group:hover .glow-security { @apply border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.2)]; }
+.group:hover .glow-ai { @apply border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.2)]; }
+.group:hover .glow-db { @apply border-teal-500/50 shadow-[0_0_20px_rgba(20,184,166,0.2)]; }
+.group:hover .glow-git { @apply border-rose-500/50 shadow-[0_0_20px_rgba(244,63,94,0.2)]; }
+.group:hover .glow-github { @apply border-white/50 shadow-[0_0_20px_rgba(255,255,255,0.2)]; }

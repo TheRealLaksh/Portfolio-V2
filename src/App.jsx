@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import Layout from './components/layout/Layout';
 import Hero from './components/sections/Hero';
-import About from './components/sections/About'; // Import About
+import About from './components/sections/About';
+import Experience from './components/sections/Experience';
+import Skills from './components/sections/Skills';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -18,10 +20,12 @@ function App() {
   return (
     <Layout>
       <Hero />
-      <About /> {/* Add About here */}
+      <About />
+      <Experience />
+      <Skills />
       
-      {/* Temp spacer for scrolling */}
-      <div className="h-[500px]" />
+      {/* Temp spacer for scrolling until next phase */}
+      <div className="h-[200px]" />
     </Layout>
   );
 }
