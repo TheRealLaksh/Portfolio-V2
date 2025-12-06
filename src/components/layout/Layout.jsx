@@ -40,7 +40,7 @@ const Layout = ({ children }) => {
             {children}
           </motion.main>
 
-          {/* Footer is now part of the layout flow */}
+          {/* Footer added here */}
           <Footer />
         </>
       )}
