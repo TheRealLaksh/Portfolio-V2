@@ -7,9 +7,12 @@ const REPO_NAMES = [
   'stranger-things',
   'Music-Player',
   'Callender-Events',
-  'Portfolio-Website ',
+  'Portfolio-Website', // Note: Check if there is a trailing space in your original code 'Portfolio-Website '
   'Shopping-demo'
 ];
+
+const CACHE_KEY = 'github_repos_data';
+const CACHE_DURATION = 60 * 60 * 1000; // 1 Hour
 
 const useGitHub = () => {
   const [projects, setProjects] = useState([]);
@@ -18,17 +21,24 @@ const useGitHub = () => {
 
   useEffect(() => {
     const fetchRepos = async () => {
+      // 1. Check Cache
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_DURATION) {
+          setProjects(data);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // 2. Fetch if no cache
       try {
         const promises = REPO_NAMES.map(async (repoName) => {
           try {
-            // 1. Fetch Repo Info
-            const { data: repo } = await axios.get(`https://api.github.com/repos/${GITHUB_USERNAME}/${repoName}`);
-            
-            // 2. Fetch Languages
+            const { data: repo } = await axios.get(`https://api.github.com/repos/${GITHUB_USERNAME}/${repoName.trim()}`);
             const { data: langs } = await axios.get(repo.languages_url);
-            const languages = Object.keys(langs); // Get array of language names
-
-            // Genre Detection
+            
             let genre = 'code';
             const lowerName = repo.name.toLowerCase();
             if (lowerName.includes('music')) genre = 'music';
@@ -44,7 +54,7 @@ const useGitHub = () => {
               url: repo.html_url,
               demo: repo.homepage,
               stars: repo.stargazers_count,
-              languages: languages, // Now contains ["HTML", "CSS", "JavaScript"] etc.
+              languages: Object.keys(langs),
               genre: genre
             };
           } catch (err) {
@@ -54,12 +64,17 @@ const useGitHub = () => {
         });
 
         const results = await Promise.all(promises);
-        const validData = results.filter(Boolean); // Filter out nulls
+        const validData = results.filter(Boolean);
 
-        if (validData.length === 0) {
-          setError("No projects found or API limit reached.");
-        } else {
+        if (validData.length > 0) {
           setProjects(validData);
+          // Save to Cache
+          localStorage.setItem(CACHE_KEY, JSON.stringify({
+            data: validData,
+            timestamp: Date.now()
+          }));
+        } else {
+          setError("API limit reached or no data.");
         }
       } catch (err) {
         console.error("GitHub API Error:", err);

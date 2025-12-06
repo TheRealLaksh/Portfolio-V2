@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react'; // Added Suspense
 import { motion, AnimatePresence } from 'framer-motion';
-import Background from '../3d/Background';
 import Preloader from '../ui/Preloader';
 import Navbar from './Navbar';
 import SocialSidebar from './SocialSidebar';
 import Footer from './Footer';
 import Spotlight from '../ui/Spotlight';
-import ChatWidget from '../chat/ChatWidget'; // ADDED THIS IMPORT
+
+// LAZY LOAD HEAVY COMPONENTS
+const Background = React.lazy(() => import('../3d/Background'));
+const ChatWidget = React.lazy(() => import('../chat/ChatWidget'));
 
 const Layout = ({ children }) => {
   const [loading, setLoading] = useState(true);
@@ -24,7 +26,10 @@ const Layout = ({ children }) => {
             animate={{ opacity: 1 }}
             transition={{ duration: 2, ease: "easeOut" }}
          >
-            <Background />
+            {/* Wrap Background in Suspense so it doesn't block the UI */}
+            <Suspense fallback={null}>
+               <Background />
+            </Suspense>
             <Spotlight />
             <div className="bg-grain"></div>
          </motion.div>
@@ -46,8 +51,10 @@ const Layout = ({ children }) => {
 
           <Footer />
           
-          {/* ADDED: ChatWidget inside the !loading block */}
-          <ChatWidget />
+          {/* Lazy load ChatWidget so it downloads last */}
+          <Suspense fallback={null}>
+            <ChatWidget />
+          </Suspense>
         </>
       )}
     </div>
