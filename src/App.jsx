@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Layout from './components/layout/Layout';
 import Hero from './components/sections/Hero';
+import About from './components/sections/About'; // Import About
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -17,8 +18,10 @@ function App() {
   return (
     <Layout>
       <Hero />
-      {/* Spacer to allow scrolling for Navbar testing */}
-      <div className="h-[1000px] w-full bg-gradient-to-b from-transparent to-black" />
+      <About /> {/* Add About here */}
+      
+      {/* Temp spacer for scrolling */}
+      <div className="h-[500px]" />
     </Layout>
   );
 }

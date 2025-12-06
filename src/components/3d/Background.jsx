@@ -23,7 +23,7 @@ const SceneContent = () => {
   // State
   const [targetColor] = useState(new THREE.Color(COLORS.home));
   
-  // Mouse state (matches script: starts off-screen)
+  // Mouse state
   const mouse = useRef(new THREE.Vector2(9999, 9999));
   const warpSpeed = useRef(0);
   const baseSpeed = 0.0005;
@@ -80,13 +80,11 @@ const SceneContent = () => {
       if (COLORS[current]) targetColor.set(COLORS[current]);
     };
 
-    // Custom event listener for Warp (bridging React click to this logic)
     const handleWarp = () => {
       warpSpeed.current = 20;
       gl.domElement.style.filter = 'blur(2px)';
       
       setTimeout(() => {
-        // Warp reset sequence
         setTimeout(() => {
           warpSpeed.current = 0;
           gl.domElement.style.filter = 'blur(0px)';
@@ -125,14 +123,12 @@ const SceneContent = () => {
       connectMeshRef.current.rotation.y += speed;
       linesMeshRef.current.rotation.y += speed;
       
-      // Gentle camera float
       camera.position.z += (100 - camera.position.z) * 0.05;
     }
 
     // 3. Mouse Repulsion & Constellation Logic
     const positions = connectMeshRef.current.geometry.attributes.position.array;
     const tempVec = new THREE.Vector3();
-    const linePositions = []; // Defined as empty in your script
 
     for (let i = 0; i < connectCount; i++) {
       const px = positions[i * 3];
@@ -143,12 +139,10 @@ const SceneContent = () => {
       const oy = originalPositions[i * 3 + 1];
       const oz = originalPositions[i * 3 + 2];
 
-      // Project star to screen space
       tempVec.set(px, py, pz);
       tempVec.applyMatrix4(connectMeshRef.current.matrixWorld);
       tempVec.project(camera);
 
-      // Distance to mouse
       const dx = tempVec.x - mouse.current.x;
       const dy = tempVec.y - mouse.current.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
@@ -166,37 +160,32 @@ const SceneContent = () => {
 
     connectMeshRef.current.geometry.attributes.position.needsUpdate = true;
 
-    // Update Lines (Empty array as per script)
-    // NOTE: This creates "invisible" lines because linePositions is empty
-    linesMeshRef.current.geometry.setFromPoints([]); 
-    // Optimization: In React we avoid creating new BufferGeometry every frame if possible,
-    // but to be "exactly like the script", we set the attribute. 
-    // Since points are empty, we just clear it.
+    // Update Lines (Empty array as per script for invisible lines)
     const emptyPos = new Float32Array(0);
     linesMeshRef.current.geometry.setAttribute('position', new THREE.BufferAttribute(emptyPos, 3));
   });
 
   return (
     <>
-      <fog attach="fog" args={[0x000000, 0.0008]} /> {/* FogExp2 approximation */}
+      <fog attach="fog" args={[0x000000, 0.0008]} />
       
-      {/* A. Background Dust */}
+      {/* A. Background Dust - Size reduced from 1.5 to 0.8 */}
       <points ref={starMeshRef}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" count={starCount} array={starPositions} itemSize={3} />
         </bufferGeometry>
-        <pointsMaterial size={0.6} color={0xffffff} transparent opacity={0.6} />
+        <pointsMaterial size={0.8} color={0xffffff} transparent opacity={0.8} />
       </points>
 
-      {/* B. Constellation Stars */}
+      {/* B. Constellation Stars - Size reduced from 4 to 2.5 */}
       <points ref={connectMeshRef}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" count={connectCount} array={connectPositions} itemSize={3} />
         </bufferGeometry>
-        <pointsMaterial size={2} color={0x0ea5e9} />
+        <pointsMaterial size={2.5} color={0x0ea5e9} />
       </points>
 
-      {/* C. Lines (Will be empty/invisible) */}
+      {/* C. Lines (Invisible) */}
       <lineSegments ref={linesMeshRef}>
         <bufferGeometry />
         <lineBasicMaterial color={0x0ea5e9} transparent opacity={0.2} />
@@ -215,12 +204,12 @@ const Background = () => {
       height: '100%',
       zIndex: -1,
       transition: 'filter 0.5s ease',
-      backgroundColor: '#050505' // Ensure background color if canvas hasn't loaded
+      backgroundColor: '#000000' // Proper Black
     }}>
       <Canvas
         camera={{ position: [0, 0, 100], fov: 75, near: 0.1, far: 2000 }}
         gl={{ alpha: true, antialias: true }}
-        dpr={[1, 2]} // Matching window.devicePixelRatio
+        dpr={[1, 2]}
       >
         <SceneContent />
       </Canvas>
