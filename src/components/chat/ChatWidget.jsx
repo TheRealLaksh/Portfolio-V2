@@ -220,12 +220,13 @@ function ChatWidget() {
       <AnimatePresence>
       {isOpen && (
         <motion.div 
+            key="chat-window"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            // Dynamic Size based on isExpanded
-            className={`mb-4 rounded-3xl overflow-hidden flex flex-col shadow-[0_0_50px_-10px_rgba(0,0,0,0.5)] border border-white/10 transition-all duration-500 ease-in-out
+            // FIXED: Changed transition-all to transition-[width,height] to prevent animation conflict
+            className={`mb-4 rounded-3xl overflow-hidden flex flex-col shadow-[0_0_50px_-10px_rgba(0,0,0,0.5)] border border-white/10 transition-[width,height] duration-500 ease-in-out
               ${isExpanded 
                 ? 'w-[90vw] md:w-[600px] h-[70vh] md:h-[700px]' 
                 : 'w-[360px] max-w-[90vw] h-[500px]'
@@ -242,7 +243,6 @@ function ChatWidget() {
 
           {isBooting ? (
             // --- BOOT SEQUENCE ---
-            // FIXED: h-full to fill container
             <div className="flex-1 flex flex-col justify-center items-start h-full font-mono text-[11px] leading-6 p-6 text-sky-400 tracking-wide select-none z-10">
               {bootLines.map((line, index) => (
                 <motion.div 
@@ -258,7 +258,6 @@ function ChatWidget() {
             </div>
           ) : (
             // --- MAIN INTERFACE ---
-            // FIXED: h-full to fill container
             <div className="relative z-10 flex flex-col h-full">
               
               {/* Header */}
@@ -295,7 +294,7 @@ function ChatWidget() {
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 custom-scrollbar scroll-smooth" onWheel={handleInnerWheel}>
                 
-                {/* Empty State with Quick Chips - FIX: Removed Logo */}
+                {/* Empty State with Quick Chips */}
                 {chatMessages.length === 0 && (
                   <div className="h-full flex flex-col items-center justify-center text-center p-4">
                     <p className="text-sm text-slate-200 font-medium mb-1">System Ready</p>
@@ -347,6 +346,7 @@ function ChatWidget() {
                         className="flex justify-start"
                     >
                         <div className="bg-slate-800/60 border border-white/5 rounded-2xl rounded-bl-sm px-4 py-3">
+                            {/* 2. Liquid Wave Indicator */}
                             <TypingWave />
                         </div>
                     </motion.div>
