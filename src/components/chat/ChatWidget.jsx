@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { 
   FiMessageSquare, FiX, FiSend, FiCopy, FiExternalLink, 
-  FiBriefcase, FiMinimize2, FiMaximize2 
+  FiBriefcase, FiMinimize2, FiMaximize2, FiMail
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import resumeFile from '../../assets/resume/laksh.pradhwani.resume.pdf'; 
@@ -45,6 +45,60 @@ const ActionChip = ({ icon: Icon, label, onClick }) => (
     <span>{label}</span>
   </button>
 );
+
+// --- NEW SUB-COMPONENT: CONTACT CARD ---
+const ContactCard = () => {
+  const handleCopy = () => {
+    navigator.clipboard.writeText('contact@lakshp.live');
+    triggerHaptic();
+  };
+
+  return (
+    <div className="w-[260px] bg-slate-900/80 backdrop-blur-xl border border-sky-500/30 rounded-2xl overflow-hidden shadow-2xl shadow-sky-500/10 mb-2">
+      {/* Header with Gradient */}
+      <div className="bg-gradient-to-r from-sky-600 to-blue-700 p-4 pb-6 relative">
+        <div className="absolute top-0 right-0 p-3 opacity-30">
+          <FiMessageSquare size={40} />
+        </div>
+        <h4 className="text-white font-bold text-lg">Let's Connect</h4>
+        <p className="text-sky-100 text-xs opacity-90">I'm open for work!</p>
+      </div>
+
+      {/* Content Body */}
+      <div className="p-4 -mt-4 relative z-10 space-y-3">
+        {/* Email Button */}
+        <button 
+          onClick={handleCopy}
+          className="w-full group flex items-center justify-between bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl p-3 transition-all active:scale-95"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-sky-500/20 flex items-center justify-center text-sky-400">
+              <FiMail size={14} />
+            </div>
+            <div className="text-left">
+              <div className="text-xs text-slate-400 uppercase font-bold tracking-wider">Email</div>
+              <div className="text-xs text-white">contact@lakshp.live</div>
+            </div>
+          </div>
+          <FiCopy className="text-slate-500 group-hover:text-white transition-colors" />
+        </button>
+
+        {/* LinkedIn / Socials */}
+        <a 
+          href="https://linkedin.com/in/laksh-pradhwani" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="w-full flex items-center gap-3 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl p-3 transition-all active:scale-95"
+        >
+          <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+            <FiExternalLink size={14} />
+          </div>
+          <span className="text-sm text-white font-medium">LinkedIn Profile</span>
+        </a>
+      </div>
+    </div>
+  );
+};
 
 function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -148,9 +202,22 @@ function ChatWidget() {
   };
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText('contact@lakshp.live');
-    setChatMessages(prev => [...prev, { sender: 'Aurora', content: '📧 Email copied to clipboard!', type: 'text' }]);
+    // 1. User Message (Fake it for better UX)
+    setChatMessages(prev => [
+      ...prev, 
+      { sender: 'You', content: 'Can I get your contact info?', type: 'text' }
+    ]);
+    
+    // 2. Bot Response with Card
+    setTimeout(() => {
+      triggerHaptic();
+      setChatMessages(prev => [
+        ...prev, 
+        { sender: 'Aurora', type: 'contact' }
+      ]);
+    }, 600);
   };
+
   const handleViewProjects = () => {
     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -161,19 +228,44 @@ function ChatWidget() {
   const sendMessage = async () => {
     const message = input.trim();
     if (!message || isLoading) return;
+    
+    // 1. Add User Message
     setInput('');
     setChatMessages((prev) => [...prev, { sender: 'You', content: message, type: 'text' }]);
     setIsLoading(true);
+
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
         body: JSON.stringify({ message, userId }),
       });
+
       if (!response.ok) throw new Error('Failed');
       const data = await response.json();
-      const aiReply = typeof data?.reply === 'string' ? data.reply : String(data?.reply ?? '');
+      
+      // --- SMART LOGIC START ---
+      let aiReply = typeof data?.reply === 'string' ? data.reply : String(data?.reply ?? '');
+      let showCard = false;
+
+      // Check for the secret tag
+      if (aiReply.includes('[SHOW_CONTACT_CARD]')) {
+        showCard = true;
+        aiReply = aiReply.replace('[SHOW_CONTACT_CARD]', ''); // Remove tag
+      }
+
+      // Add text reply first
       setChatMessages((prev) => [...prev, { sender: 'Aurora', content: aiReply, type: 'mdx' }]);
+
+      // Trigger card if needed
+      if (showCard) {
+        setTimeout(() => {
+            triggerHaptic();
+            setChatMessages((prev) => [...prev, { sender: 'Aurora', type: 'contact' }]);
+        }, 600);
+      }
+      // --- SMART LOGIC END ---
+
     } catch {
       setChatMessages((prev) => [...prev, { sender: 'Aurora', content: 'Error. Please try again.', type: 'text' }]);
     } finally {
@@ -202,7 +294,7 @@ function ChatWidget() {
 
   return (
     <>
-      {/* 1. NOTIFICATION BUBBLE (Enhanced Visibility, Hidden on Mobile) */}
+      {/* 1. NOTIFICATION BUBBLE */}
       <AnimatePresence>
         {showNotification && !isOpen && (
           <motion.div
@@ -213,15 +305,12 @@ function ChatWidget() {
             onClick={() => setIsOpen(true)}
           >
             <div className="relative bg-slate-900/90 backdrop-blur-xl text-white px-6 py-4 rounded-2xl rounded-br-sm border border-sky-500/30 shadow-[0_0_30px_-10px_rgba(14,165,233,0.4)] hover:border-sky-400/50 hover:shadow-sky-500/30 transition-all duration-300 max-w-[280px]">
-              
-              {/* Close Button */}
               <button 
                 onClick={(e) => { e.stopPropagation(); setShowNotification(false); }}
                 className="absolute -top-2 -left-2 bg-slate-800 text-slate-400 hover:text-white border border-white/10 rounded-full p-1.5 transition-colors shadow-lg"
               >
                 <FiX size={12} />
               </button>
-
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
                   <span className="relative flex h-2.5 w-2.5">
@@ -234,19 +323,16 @@ function ChatWidget() {
                   Curious about my work? I can answer questions about my skills & experience instantly.
                 </p>
               </div>
-              
-              {/* Pointed Tail */}
               <div className="absolute bottom-0 right-0 translate-y-[40%] translate-x-[-10px] w-4 h-4 bg-slate-900/90 border-r border-b border-sky-500/30 rotate-45 clip-path-polygon -z-10"></div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 2. CHAT WINDOW (Bottom Sheet on Mobile, Floating on Desktop) */}
+      {/* 2. CHAT WINDOW */}
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop for mobile */}
             <motion.div 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm"
@@ -255,29 +341,21 @@ function ChatWidget() {
 
             <motion.div 
               key="chat-window"
-              // Desktop: Scale up. Mobile: Slide up.
               initial={{ y: "100%", opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: "100%", opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
               className={cn(
                 "fixed z-50 flex flex-col overflow-hidden shadow-[0_0_50px_-10px_rgba(0,0,0,0.6)] border-t border-x md:border border-white/10 bg-[#0a0a0b]/95 backdrop-blur-xl origin-bottom-right transition-all duration-300 ease-in-out",
-                // Mobile Base Styles (Bottom Sheet)
                 "bottom-0 left-0 right-0 w-full h-[85dvh] rounded-t-3xl",
-                // Desktop Base Styles (Floating)
                 "md:bottom-[80px] md:right-6 md:left-auto md:max-w-[calc(100vw-3rem)] md:rounded-3xl",
-                // Dynamic Sizing Logic
-                isExpanded 
-                  ? "md:w-[600px] md:h-[700px]" 
-                  : "md:w-[380px] md:h-[550px]"
+                isExpanded ? "md:w-[600px] md:h-[700px]" : "md:w-[380px] md:h-[550px]"
               )}
             >
-              {/* Mobile Drag Handle */}
               <div className="w-full flex justify-center pt-3 pb-1 md:hidden" onClick={() => setIsOpen(false)}>
                   <div className="w-12 h-1.5 bg-slate-700 rounded-full"></div>
               </div>
 
-              {/* Background Grain */}
               <div className="absolute inset-0 opacity-[0.04] pointer-events-none z-0 mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
 
               {isBooting ? (
@@ -291,7 +369,6 @@ function ChatWidget() {
                 </div>
               ) : (
                 <div className="relative z-10 flex flex-col h-full">
-                  {/* Header */}
                   <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-white/5">
                     <div>
                       <div className="text-sm font-bold text-white flex items-center gap-2">
@@ -336,17 +413,22 @@ function ChatWidget() {
                     )}
                     {chatMessages.map((msg, i) => (
                       <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`flex ${msg.sender === 'You' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed shadow-sm ${
-                          msg.sender === 'You' 
-                            ? 'bg-gradient-to-br from-sky-600 to-blue-600 text-white rounded-br-sm shadow-sky-900/20' 
-                            : 'bg-slate-800/80 text-slate-200 border border-white/5 rounded-bl-sm'
-                        }`}>
-                          {msg.type === 'mdx' ? (
-                            <div className="prose prose-invert prose-p:my-1 text-[13px] prose-a:text-sky-300 prose-code:bg-black/30 prose-code:rounded prose-code:px-1">
-                              <ReactMarkdown>{String(msg.content)}</ReactMarkdown>
+                        {/* --- RENDER CARD OR TEXT --- */}
+                        {msg.type === 'contact' ? (
+                            <ContactCard />
+                        ) : (
+                            <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed shadow-sm ${
+                            msg.sender === 'You' 
+                                ? 'bg-gradient-to-br from-sky-600 to-blue-600 text-white rounded-br-sm shadow-sky-900/20' 
+                                : 'bg-slate-800/80 text-slate-200 border border-white/5 rounded-bl-sm'
+                            }`}>
+                            {msg.type === 'mdx' ? (
+                                <div className="prose prose-invert prose-p:my-1 text-[13px] prose-a:text-sky-300 prose-code:bg-black/30 prose-code:rounded prose-code:px-1">
+                                <ReactMarkdown>{String(msg.content)}</ReactMarkdown>
+                                </div>
+                            ) : msg.content}
                             </div>
-                          ) : msg.content}
-                        </div>
+                        )}
                       </motion.div>
                     ))}
                     {isLoading && (
@@ -359,7 +441,6 @@ function ChatWidget() {
                     <div ref={messagesEndRef} />
                   </div>
 
-                  {/* Input */}
                   <div className="p-4 bg-gradient-to-t from-black/80 to-transparent pb-8 md:pb-4">
                     <div className="relative group">
                       <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-500 to-purple-500 rounded-full opacity-0 group-focus-within:opacity-20 transition duration-500 blur-md"></div>
@@ -387,21 +468,15 @@ function ChatWidget() {
         )}
       </AnimatePresence>
 
-      {/* 3. DESKTOP TOGGLE BUTTON (Styled like SocialSidebar) */}
       <button
         onClick={handleToggle}
         className="fixed bottom-6 right-6 z-[60] group hidden md:flex items-center justify-end w-12 hover:w-36 h-12 rounded-full overflow-hidden transition-all duration-500 ease-out bg-transparent border border-transparent hover:bg-slate-900 hover:border-slate-700 hover:shadow-2xl hover:shadow-sky-900/20 active:scale-95"
         aria-label="Toggle Chat"
       >
-        {/* Glow Effect */}
         <div className="absolute inset-0 w-full h-full bg-sky-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
-        {/* Text (Slide Reveal from Left - Pushes icon) */}
         <span className="absolute right-14 opacity-0 group-hover:opacity-100 text-sky-400 font-medium text-sm whitespace-nowrap transition-all duration-500 delay-75">
           AI Assistant
         </span>
-        
-        {/* Icon (Fixed on Right) */}
         <div className={`relative w-12 h-12 flex items-center justify-center shrink-0 z-10 transition-colors duration-300 ${isOpen ? 'text-white' : 'text-slate-400 group-hover:text-sky-400'}`}>
           {isOpen ? <FiX size={24} /> : <FiMessageSquare size={24} />}
         </div>
