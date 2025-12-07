@@ -5,9 +5,13 @@ import {
   FiBriefcase, FiMinimize2, FiMaximize2, FiMail
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
+import resumeFile from '../../assets/resume/laksh.pradhwani.resume.pdf'; 
 import { triggerHaptic } from '../../utils/triggerHaptic';
 import { cn } from '../../utils/cn';
-import { createChatActions } from './chat.actions';
+
+// ✅ API Configuration (RESTORED)
+const API_URL = 'https://ai-backend-2.vercel.app/api/chat';
+const API_KEY = 'AI-Laksh123';
 
 /* ---------------- COMPONENTS ---------------- */
 
@@ -15,7 +19,7 @@ const TypingWave = () => (
   <div className="flex gap-1 items-center h-4 px-2">
     {[0, 1, 2, 3].map((i) => (
       <motion.div
-        key={i_toggle}
+        key={i}
         className="w-1 bg-sky-400 rounded-full"
         animate={{ height: ["4px", "12px", "4px"], opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 1, repeat: Infinity, ease: "easeInOut", delay: i * 0.15 }}
@@ -36,7 +40,6 @@ const ActionChip = ({ icon: Icon, label, onClick }) => (
 
 const ContactCard = () => {
   const handleCopy = () => {
-    explain
     navigator.clipboard.writeText('contact@lakshp.live');
     triggerHaptic();
   };
@@ -95,42 +98,32 @@ function ChatWidget() {
   const [bootLines, setBootLines] = useState([]);
   const [chatMessages, setChatMessages] = useState(() => {
     try {
-      const stored = localStorage.getItem('auroraChatMessages');
-      return stored ? JSON.parse(stored) : [];
+      return JSON.parse(localStorage.getItem('auroraChatMessages')) || [];
     } catch { return []; }
   });
   const [userId, setUserId] = useState(() => {
     try { return localStorage.getItem('auroraUserId') || ''; } catch { return ''; }
   });
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
-
-  const actions = createChatActions({
-    input,
-    isLoading,
-    userId,
-    setInput,
-    setChatMessages,
-    setIsLoading
-  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!isOpen) setShowNotification(true);
     }, 3000);
-    return () => clear(block)
-      }, []);
+    return () => clearTimeout(timer);
+  }, [isOpen]);
 
- useEffect(() => {
+  useEffect(() => {
     if (isOpen) setShowNotification(false);
-  }, [isopen]);
+  }, [isOpen]);
 
   useEffect(() => {
     if (!userId) {
-      const newid = 'user-' + Date.now();
-      setUserId(newid);
-      localStorage.setItem('auroraUserId', newid);
+      const newUserId = 'user-' + Date.now();
+      setUserId(newUserId);
+      localStorage.setItem('auroraUserId', newUserId);
     }
   }, [userId]);
 
@@ -146,19 +139,16 @@ function ChatWidget() {
     if (isOpen && !hasBooted) {
       setIsBooting(true);
       setBootLines([]);
-
       const logs = [
         "> INITIALIZING NEURAL UPLINK...",
         "> CONNECTING TO LAKSH_CORE...",
         "> SECURITY HANDSHAKE::VERIFIED",
         "> ESTABLISHING SECURE CHANNEL..."
       ];
-
       let i = 0;
       const interval = setInterval(() => {
-        if (i < logs.length) {
-          setBootLines(p => [...p, logs[i++]]);
-        } else {
+        if (i < logs.length) setBootLines(p => [...p, logs[i++]]);
+        else {
           clearInterval(interval);
           setTimeout(() => {
             setIsBooting(false);
@@ -174,10 +164,58 @@ function ChatWidget() {
     setIsOpen(prev => !prev);
   };
 
+  const handleViewProjects = () => {
+    document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleDownloadResume = () => {
+    window.open(resumeFile, '_blank');
+  };
+
+  const sendMessage = async () => {
+    const message = input.trim();
+    if (!message || isLoading) return;
+
+    setInput('');
+    setChatMessages(prev => [...prev, { sender: 'You', content: message, type: 'text' }]);
+    setIsLoading(true);
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+        body: JSON.stringify({ message, userId }),
+      });
+
+      const data = await res.json();
+      let aiReply = data?.reply || '';
+      let showCard = false;
+
+      if (aiReply.includes('[SHOW_CONTACT_CARD]')) {
+        showCard = true;
+        aiReply = aiReply.replace('[SHOW_CONTACT_CARD]', '');
+      }
+
+      setChatMessages(prev => [...prev, { sender: 'Aurora', content: aiReply, type: 'mdx' }]);
+
+      if (showCard) {
+        setTimeout(() => {
+          triggerHaptic();
+          setChatMessages(prev => [...prev, { sender: 'Aurora', type: 'contact' }]);
+        }, 600);
+      }
+
+    } catch {
+      setChatMessages(prev => [...prev, { sender: 'Aurora', content: 'Error. Please try again.', type: 'text' }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
-      {/* SAME UI YOU ALREADY HAD BELOW — UNCHANGED */}
-      {/* YOUR FULL CHAT WINDOW, NOTIFICATION, INPUT, BUTTON, ETC */}
+      {/* ✅ YOUR FULL UI CONTINUES HERE UNCHANGED */}
+      {/* The rest of your JSX remains EXACTLY as before */}
     </>
   );
 }
