@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiMessageSquare, FiX, FiSend, FiBriefcase, FiExternalLink, FiCopy, FiMinimize2, FiMaximize2 } from 'react-icons/fi';
+import { 
+  FiMessageSquare, FiX, FiSend, FiBriefcase, 
+  FiFileText, FiMail, FiMinimize2, FiMaximize2 
+} from 'react-icons/fi'; // Updated imports
 import { cn } from '../../utils/cn';
 import { triggerHaptic } from '../../utils/triggerHaptic';
 import resumeFile from '../../assets/resume/laksh.pradhwani.resume.pdf';
@@ -98,10 +101,15 @@ const ChatWidget = () => {
   };
 
   const handleQuickAction = (action) => {
-    if (action === 'projects') document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
-    if (action === 'resume') window.open(resumeFile, '_blank');
-    if (action === 'email') {
-      addMessage({ sender: 'You', content: 'Can I get your contact info?', type: 'text' });
+    if (action === 'projects') {
+        setIsOpen(false); // Optional: close chat to see projects
+        document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+    }
+    if (action === 'resume') {
+        window.open(resumeFile, '_blank');
+    }
+    if (action === 'contact') {
+      addMessage({ sender: 'You', content: 'Show me contacts', type: 'text' });
       setTimeout(() => {
         triggerHaptic();
         addMessage({ sender: 'Aurora', type: 'contact' });
@@ -158,7 +166,8 @@ const ChatWidget = () => {
                     <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span></span>
                     AI Laksh
                   </div>
-                  <p className="text-[10px] text-slate-400 font-medium ml-4 tracking-wider">Online • v2.0.4</p>
+                  {/* UPDATED HEADER TEXT */}
+                  <p className="text-[10px] text-slate-400 font-medium ml-4 tracking-wider">Online and Ready - v2.0.4</p>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => setIsExpanded(!isExpanded)} className="text-slate-400 hover:text-white p-2 hidden md:block">{isExpanded ? <FiMinimize2 /> : <FiMaximize2 />}</button>
@@ -176,18 +185,20 @@ const ChatWidget = () => {
                 ) : (
                   <>
                     <div 
-                      className="flex-1 overflow-y-auto min-h-0 px-5 py-5 space-y-5 custom-scrollbar z-10"
-                      data-lenis-prevent="true" // <--- CRITICAL FIX FOR SCROLLING
+                      className="flex-1 overflow-y-auto min-h-0 px-5 py-5 space-y-5 custom-scrollbar z-10 overscroll-contain"
+                      data-lenis-prevent="true"
                     >
                       {chatMessages.length === 0 && (
                         <div className="h-full flex flex-col items-center justify-center text-center p-6">
                           <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-4 border border-white/5"><FiMessageSquare size={24} className="text-sky-500/80" /></div>
                           <p className="text-base font-medium text-white mb-2">System Ready</p>
                           <p className="text-xs text-slate-400 mb-8 max-w-[200px]">Ask anything about Laksh's tech stack, projects, or experience.</p>
+                          
+                          {/* UPDATED ACTION CHIPS */}
                           <div className="flex flex-wrap justify-center gap-3">
                             <ActionChip icon={FiBriefcase} label="View Projects" onClick={() => handleQuickAction('projects')} />
-                            <ActionChip icon={FiCopy} label="Copy Email" onClick={() => handleQuickAction('email')} />
-                            <ActionChip icon={FiExternalLink} label="Resume" onClick={() => handleQuickAction('resume')} />
+                            <ActionChip icon={FiMail} label="Contacts" onClick={() => handleQuickAction('contact')} />
+                            <ActionChip icon={FiFileText} label="Resume" onClick={() => handleQuickAction('resume')} />
                           </div>
                         </div>
                       )}

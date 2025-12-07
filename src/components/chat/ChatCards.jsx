@@ -2,19 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FiGithub, FiLinkedin, FiInstagram, FiMail, FiExternalLink, 
-  FiCalendar, FiDownload, FiMusic, FiCpu, FiBriefcase, FiStar 
-} from 'react-icons/fi';
+  FiCalendar, FiDownload, FiMusic, FiCpu, FiBriefcase, FiStar, FiCheck 
+} from 'react-icons/fi'; // Added FiCheck
 import useSpotify from '../../hooks/useSpotify';
 import useGitHub from '../../hooks/useGitHub';
 import profileImg from '../../assets/images/laksh.pradhwani.webp';
 import resumeFile from '../../assets/resume/laksh.pradhwani.resume.pdf';
 import { skillsData } from '../../data/skillsData';
-import { experienceData } from '../../data/timelineData'; // Ensure this data file exists and exports experienceData
+import { experienceData } from '../../data/timelineData';
 
-// --- 1. CONTACT CARD ---
+// --- 1. CONTACT CARD (Fixed Email Button) ---
 export const ContactCard = () => {
   const [time, setTime] = useState('');
   const [isOnline, setIsOnline] = useState(false);
+  const [copied, setCopied] = useState(false); // New state for copy feedback
 
   useEffect(() => {
     const updateTime = () => {
@@ -33,6 +34,12 @@ export const ContactCard = () => {
     const interval = setInterval(updateTime, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText('contact@lakshp.live');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div className="w-[280px] bg-slate-900/90 backdrop-blur-xl border border-sky-500/30 rounded-2xl shadow-2xl shadow-sky-500/10 mb-2 overflow-hidden">
@@ -61,13 +68,21 @@ export const ContactCard = () => {
           <p className="text-sky-400/80 text-xs font-medium mb-4">Full Stack Developer</p>
 
           <div className="space-y-2">
-            <a href="mailto:contact@lakshp.live" className="w-full flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 transition-all group active:scale-95">
+            {/* UPDATED EMAIL BUTTON */}
+            <button 
+              onClick={handleCopyEmail}
+              className="w-full flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 transition-all group active:scale-95"
+            >
               <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-400"><FiMail size={12} /></div>
-                  <span className="text-xs font-medium text-slate-200">Email Me</span>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${copied ? 'bg-green-500/20 text-green-400' : 'bg-rose-500/20 text-rose-400'}`}>
+                    {copied ? <FiCheck size={12} /> : <FiMail size={12} />}
+                  </div>
+                  <span className="text-xs font-medium text-slate-200">
+                    {copied ? 'Copied to Clipboard!' : 'contact@lakshp.live'}
+                  </span>
               </div>
-              <FiExternalLink className="text-slate-500 group-hover:text-white transition-colors" size={12} />
-            </a>
+              {!copied && <FiCopy className="text-slate-500 group-hover:text-white transition-colors" size={12} />}
+            </button>
 
             <div className="flex gap-2">
                 <a href={resumeFile} download="Laksh_Pradhwani_Resume.pdf" className="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl py-2.5 transition-all active:scale-95">
@@ -150,7 +165,7 @@ export const ProjectCard = () => {
   );
 };
 
-// --- 3. EXPERIENCE / ROLE CARD (FIXED) ---
+// --- 3. EXPERIENCE / ROLE CARD ---
 export const ExperienceCard = () => (
   <div className="flex gap-4 overflow-x-auto pb-4 max-w-[85vw] md:max-w-[500px] snap-x custom-scrollbar">
      {experienceData.map((item) => (
