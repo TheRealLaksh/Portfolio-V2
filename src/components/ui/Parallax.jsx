@@ -11,7 +11,7 @@ export const Parallax = ({ children, speed = 0.5, className = "" }) => {
   const y = useTransform(scrollYProgress, [0, 1], ["0%", `${speed * 100}%`]);
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={ref} className={`relative ${className}`}>
       {/* ADDED 'h-full w-full' CLASS HERE */}
       <motion.div style={{ y }} className="h-full w-full">
         {children}
