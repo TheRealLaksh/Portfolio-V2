@@ -1,13 +1,12 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
-// Ensure ChatCards.jsx exists in the same folder!
+// Link to the specific card components
 import { 
   ContactCard, 
   ProjectCard, 
   ExperienceCard, 
   TechStackCard, 
-  EducationCard, 
   VibeCard 
 } from './ChatCards';
 
@@ -37,14 +36,14 @@ export const ActionChip = ({ icon: Icon, label, onClick }) => (
 export const ChatBubble = ({ msg }) => {
   const isUser = msg.sender === 'You';
   
-  // --- CARD ROUTING LOGIC ---
+  // 1. Render Specific Card Types
   if (msg.type === 'contact') return <ContactCard />;
   if (msg.type === 'project') return <ProjectCard />;
   if (msg.type === 'experience') return <ExperienceCard />;
   if (msg.type === 'stack') return <TechStackCard />;
-  if (msg.type === 'education') return <EducationCard />;
   if (msg.type === 'vibe') return <VibeCard />;
 
+  // 2. Render Standard Text
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed shadow-sm ${
