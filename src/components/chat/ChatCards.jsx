@@ -55,7 +55,7 @@ export const ContactCard = () => {
       <div className="px-5 pb-5 relative z-10 -mt-6">
           <div className="flex justify-between items-end mb-3">
             <div className="w-14 h-14 rounded-full p-0.5 bg-gradient-to-b from-sky-300 to-blue-600 shadow-lg">
-                <img src={profileImg} alt="Profile" className="w-full h-full rounded-full object-cover border-2 border-slate-900" />
+                <img src={profileImg} alt="Profile" loading="lazy" className="w-full h-full rounded-full object-cover border-2 border-slate-900" />
             </div>
             <div className="flex gap-2">
                 <a href="https://github.com/TheRealLaksh" target="_blank" rel="noreferrer" className="social-btn text-slate-400 hover:text-white transition-colors"><FiGithub size={16} /></a>

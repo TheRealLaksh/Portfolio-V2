@@ -39,7 +39,7 @@ const langColors = {
 };
 
 const ProjectSkeleton = () => (
-  <div className="w-full h-[350px] bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 animate-pulse">
+  <div className="w-full h-[350px] bg-slate-900/50 border border-zinc-800 rounded-2xl p-6 animate-pulse">
     <div className="flex justify-between mb-6">
       <div className="w-10 h-10 rounded-full bg-zinc-800"></div>
       <div className="w-20 h-8 rounded-full bg-zinc-800"></div>
