@@ -78,7 +78,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="relative w-full bg-[#020203] border-t border-white/5 overflow-hidden pt-14 pb-28 md:pb-14">
+    <footer className="relative w-full bg-[#020203] border-t border-white/5 overflow-hidden pt-14 pb-32 md:pb-14">
       
       {/* Background Overlay - Made slightly brighter */}
       <div className="absolute inset-0 z-0 pointer-events-none"
@@ -87,13 +87,13 @@ const Footer = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 flex flex-col items-center">
         
-        {/* Top Grid Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full mb-12 text-center md:text-left">
+        {/* Top Grid Section: Stacked on Mobile, 3 Cols on Desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 w-full mb-12 text-center md:text-left">
           
           {/* 1. Brand Info */}
-          <div className="space-y-4">
+          <div className="space-y-4 flex flex-col items-center md:items-start">
             <h2 className="text-2xl font-semibold text-white">Laksh Pradhwani</h2>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <p className="text-sm text-slate-400 leading-relaxed max-w-xs md:max-w-none">
               Building fast, immersive and futuristic digital experiences.
             </p>
             <div className="flex items-center justify-center md:justify-start gap-3 mt-4">
@@ -105,8 +105,8 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* 2. Links */}
-          <div>
+          {/* 2. Links - Hidden on Mobile to save vertical space */}
+          <div className="hidden md:block">
             <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-3 text-sm text-slate-400">
               {['Home', 'About', 'Skills', 'Experience', 'Projects', 'Resume', 'Contact'].map((link) => (
@@ -121,17 +121,17 @@ const Footer = () => {
 
           {/* 3. Connect & Spotify */}
           <div className="flex flex-col items-center md:items-start">
-            <h3 className="text-white font-semibold mb-4">Connect</h3>
+            <h3 className="text-white font-semibold mb-4 md:block hidden">Connect</h3>
 
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center gap-6 mb-6">
               <a href="https://github.com/TheRealLaksh" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
-                <FiGithub size={20} />
+                <FiGithub size={22} />
               </a>
               <a href="https://linkedin.com/in/laksh-pradhwani" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-blue-400 transition-colors">
-                <FiLinkedin size={20} />
+                <FiLinkedin size={22} />
               </a>
               <a href="mailto:contact@lakshp.live" className="text-slate-400 hover:text-rose-400 transition-colors">
-                <FiMail size={20} />
+                <FiMail size={22} />
               </a>
             </div>
 
@@ -170,14 +170,14 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* --- INTERACTIVE TEXT (Brighter Version) --- */}
+        {/* --- INTERACTIVE TEXT (Hidden on Mobile) --- */}
         <div 
           id="footer-hover-container"
           ref={containerRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           onClick={scrollToTop}
-          className="w-full h-32 sm:h-48 md:h-64 relative cursor-pointer select-none flex items-center justify-center mb-8 group"
+          className="w-full h-20 sm:h-48 md:h-64 relative cursor-pointer select-none hidden sm:flex items-center justify-center mb-8 group"
         >
           <svg className="w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="xMidYMid meet">
             <defs>
@@ -240,7 +240,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/5 w-full pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600">
+        <div className="border-t border-white/5 w-full pt-8 flex flex-col md:flex-row justify-center md:justify-between items-center gap-4 text-xs text-slate-600">
           <p>© {new Date().getFullYear()} Laksh Pradhwani. All Rights Reserved.</p>
 
           <div className="flex items-center gap-2 bg-[#0a0a0b] px-3 py-1.5 rounded-full border border-white/10 shadow-inner shadow-white/5">

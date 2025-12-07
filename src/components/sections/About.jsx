@@ -5,6 +5,7 @@ import { FiCode, FiMapPin, FiCpu, FiGlobe, FiTerminal } from 'react-icons/fi';
 import profileImg from '../../assets/images/laksh.pradhwani.webp';
 import { TextReveal } from '../ui/TextReveal';
 import { Parallax } from '../ui/Parallax';
+import { triggerHaptic } from '../../utils/triggerHaptic';
 
 // --- SUB-COMPONENT: TERMINAL BIO ---
 const TerminalBio = () => {
@@ -27,7 +28,7 @@ const TerminalBio = () => {
   }, []);
 
   return (
-    <div className="w-full rounded-xl bg-[#1e1e1e] border border-slate-700 shadow-2xl overflow-hidden group hover:border-slate-500 transition-colors duration-300">
+    <div className="min-w-[90vw] md:min-w-0 w-full rounded-xl bg-[#1e1e1e] border border-slate-700 shadow-2xl overflow-hidden group hover:border-slate-500 transition-colors duration-300 snap-center">
       {/* Terminal Header */}
       <div className="bg-[#2d2d2d] px-4 py-2 flex items-center gap-2 border-b border-slate-700">
         <div className="flex gap-1.5">
@@ -58,8 +59,8 @@ const TerminalBio = () => {
 // --- SUB-COMPONENT: LOCATION RADAR ---
 const LocationRadar = () => {
   return (
-    <div className="relative group cursor-crosshair">
-      <div className="relative w-32 h-32 flex items-center justify-center">
+    <div className="relative group cursor-crosshair min-w-[200px]">
+      <div className="relative w-32 h-32 flex items-center justify-center mx-auto">
         {/* Outer Ring */}
         <div className="absolute inset-0 border border-emerald-500/30 rounded-full animate-[spin_4s_linear_infinite]"></div>
         <div className="absolute inset-2 border border-emerald-500/10 rounded-full border-dashed animate-[spin_10s_linear_infinite_reverse]"></div>
@@ -114,12 +115,14 @@ const About = () => {
                 tiltMaxAngleY={15} 
                 perspective={1000} 
                 scale={1.05}
+                gyroscope={true}
                 className="relative w-full max-w-[400px] aspect-[4/5] rounded-2xl overflow-hidden group"
             >
                 {/* Image */}
                 <img 
                   src={profileImg} 
                   alt="Laksh Pradhwani"
+                  onClick={triggerHaptic}
                   className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 brightness-75 group-hover:brightness-100"
                 />
 
@@ -158,12 +161,18 @@ const About = () => {
           </div>
 
           {/* RIGHT: CONTENT & WIDGETS */}
-          <div className="w-full xl:w-7/12 flex flex-col gap-10">
+          <div className="w-full xl:w-7/12 flex flex-col gap-8">
             
-            {/* 3. TERMINAL BIOGRAPHY */}
-            <TerminalBio />
+            {/* Mobile: Swipeable Carousel for Terminal & Radar */}
+            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:block md:space-y-8 no-scrollbar">
+                <TerminalBio />
+                {/* Mobile-only Radar wrapper in carousel */}
+                <div className="min-w-[80vw] md:hidden snap-center flex items-center justify-center bg-slate-900/50 border border-slate-800 rounded-xl">
+                    <LocationRadar />
+                </div>
+            </div>
 
-            {/* Standard Text Description - RESTORED ORIGINAL CONTENT */}
+            {/* Standard Text Description */}
             <div className="text-slate-300 text-lg leading-relaxed space-y-6 font-light">
                 <TextReveal>
                   <p>
@@ -197,8 +206,8 @@ const About = () => {
                 </TextReveal>
             </div>
 
-            {/* 10. LOCATION RADAR & STATS GRID */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
+            {/* Desktop Grid for Widgets (Hidden on mobile swipe view) */}
+            <div className="hidden md:grid grid-cols-2 gap-6 mt-4">
                 
                 {/* Radar Card */}
                 <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 flex flex-col items-center justify-center backdrop-blur-sm">

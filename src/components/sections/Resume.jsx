@@ -2,6 +2,7 @@ import React from 'react';
 import resumeFile from '../../assets/resume/laksh.pradhwani.resume.pdf';
 import { TextReveal } from '../ui/TextReveal';
 import { Reveal } from '../ui/Reveal';
+import { triggerHaptic } from '../../utils/triggerHaptic';
 
 const Resume = () => {
   return (
@@ -20,14 +21,16 @@ const Resume = () => {
         </div>
 
         <Reveal delay={0.4}>
-           <div className="flex flex-wrap justify-center gap-6 relative z-20">
+           {/* Mobile: Vertical Stack (flex-col), Desktop: Row (md:flex-row) */}
+           <div className="flex flex-col md:flex-row flex-wrap justify-center gap-4 md:gap-6 relative z-20 max-w-sm md:max-w-none mx-auto">
 
               {/* View Resume (Emerald) */}
               <a 
                 href={resumeFile} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="group relative w-56 cursor-pointer overflow-hidden rounded-full border border-slate-700 bg-slate-900/50 p-3 text-center font-semibold shadow-lg transition-all duration-300 hover:border-emerald-500/50 hover:shadow-emerald-500/20"
+                onClick={triggerHaptic}
+                className="group relative w-full md:w-56 cursor-pointer overflow-hidden rounded-full border border-slate-700 bg-slate-900/50 p-3 text-center font-semibold shadow-lg transition-all duration-300 hover:border-emerald-500/50 hover:shadow-emerald-500/20 active:scale-95"
               >
                 <span className="inline-block transition-all duration-300 group-hover:translate-x-12 group-hover:opacity-0 text-slate-300">
                   View Resume
@@ -43,7 +46,8 @@ const Resume = () => {
               <a 
                 href={resumeFile} 
                 download="Laksh_Pradhwani_Resume.pdf"
-                className="group relative w-56 cursor-pointer overflow-hidden rounded-full border border-slate-700 bg-slate-900/50 p-3 text-center font-semibold shadow-lg transition-all duration-300 hover:border-rose-500/50 hover:shadow-rose-500/20"
+                onClick={triggerHaptic}
+                className="group relative w-full md:w-56 cursor-pointer overflow-hidden rounded-full border border-slate-700 bg-slate-900/50 p-3 text-center font-semibold shadow-lg transition-all duration-300 hover:border-rose-500/50 hover:shadow-rose-500/20 active:scale-95"
               >
                 <span className="inline-block transition-all duration-300 group-hover:translate-x-12 group-hover:opacity-0 text-slate-300">
                   Download CV

@@ -3,6 +3,7 @@ import useGitHub from '../../hooks/useGitHub';
 import { FiGithub, FiExternalLink, FiMusic, FiPenTool, FiCalendar, FiShoppingCart, FiTv, FiCode } from 'react-icons/fi';
 import { TextReveal } from '../ui/TextReveal';
 import { Reveal } from '../ui/Reveal';
+import { triggerHaptic } from '../../utils/triggerHaptic';
 
 const GITHUB_USERNAME = 'TheRealLaksh';
 
@@ -28,24 +29,45 @@ const langColors = {
   default: "text-zinc-300 bg-zinc-800/50 border-zinc-700/50"
 };
 
+// Skeleton Loader Component
+const ProjectSkeleton = () => (
+  <div className="flex-shrink-0 w-[85vw] md:w-auto h-[350px] bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 animate-pulse snap-center">
+    <div className="flex justify-between mb-6">
+      <div className="w-10 h-10 rounded-full bg-zinc-800"></div>
+      <div className="w-20 h-8 rounded-full bg-zinc-800"></div>
+    </div>
+    <div className="h-6 w-3/4 bg-zinc-800 rounded mb-4"></div>
+    <div className="h-4 w-full bg-zinc-800 rounded mb-2"></div>
+    <div className="h-4 w-2/3 bg-zinc-800 rounded"></div>
+  </div>
+);
+
 const Projects = () => {
   const { projects, loading, error } = useGitHub();
 
   return (
     <section id="projects" className="my-16 sm:my-32 scroll-mt-20 relative z-10">
-      <div className="w-full px-6 md:px-12">
+      <div className="w-full px-0 md:px-12"> {/* Zero padding mobile for full bleed */}
 
-        <TextReveal className="mb-12">
+        <TextReveal className="mb-8 md:mb-12 px-6">
            <div className="flex items-center justify-between max-w-[1600px] mx-auto">
              <h2 className="text-3xl font-bold text-white">GitHub Shipments</h2>
-             <div className="h-[1px] flex-grow bg-gradient-to-r from-slate-700 to-transparent ml-6"></div>
+             <div className="h-[1px] flex-grow bg-gradient-to-r from-slate-700 to-transparent ml-6 hidden md:block"></div>
            </div>
         </TextReveal>
 
-        <div id="github-projects-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-[1600px] mx-auto">
+        {/* Mobile: Horizontal Scroll | Desktop: Grid */}
+        <div 
+            id="github-projects-grid" 
+            className="flex overflow-x-auto snap-x snap-mandatory gap-4 px-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 max-w-[1600px] mx-auto no-scrollbar"
+        >
           
           {loading && (
-            <p className="text-slate-400 col-span-full text-center animate-pulse font-mono">Loading neural interface...</p>
+             <>
+                <ProjectSkeleton />
+                <ProjectSkeleton />
+                <ProjectSkeleton />
+             </>
           )}
 
           {error && (
@@ -57,9 +79,10 @@ const Projects = () => {
              const languages = repo.languages.length > 0 ? repo.languages : ["Code"];
 
              return (
-              <Reveal key={repo.id} delay={index * 0.1} className="h-full">
+              <Reveal key={repo.id} delay={index * 0.1} className="h-full flex-shrink-0 w-[85vw] md:w-auto snap-center">
                 <div 
-                  className="group relative flex flex-col h-full bg-[#050505] border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:border-zinc-600 hover:shadow-2xl hover:-translate-y-1"
+                  onClick={triggerHaptic}
+                  className="group relative flex flex-col h-full bg-[#050505] border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:border-zinc-600 hover:shadow-2xl hover:-translate-y-1 active:scale-95"
                 >
                   <div className="p-6 flex flex-col flex-grow">
 
@@ -109,7 +132,7 @@ const Projects = () => {
                       {repo.name}
                     </h3>
 
-                    <p className="text-sm text-zinc-400 leading-relaxed font-light flex-grow mb-6">
+                    <p className="text-sm text-zinc-400 leading-relaxed font-light flex-grow mb-6 line-clamp-3">
                       {repo.description}
                     </p>
 
@@ -132,9 +155,10 @@ const Projects = () => {
         </div>
 
         <Reveal delay={0.2}>
-          <div className="view-more-container mt-16 text-center">
+          <div className="view-more-container mt-8 md:mt-16 text-center px-6">
             <a href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`} target="_blank" rel="noopener noreferrer"
-              className="relative inline-flex group items-center justify-center px-8 py-3 overflow-hidden font-medium text-sky-400 border border-sky-400/30 rounded-lg hover:bg-sky-400/10 transition-all duration-300">
+              onClick={triggerHaptic}
+              className="relative inline-flex w-full md:w-auto group items-center justify-center px-8 py-3 overflow-hidden font-medium text-sky-400 border border-sky-400/30 rounded-lg hover:bg-sky-400/10 transition-all duration-300 active:scale-95">
               <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-sky-400 rounded-full group-hover:w-56 group-hover:h-56 opacity-10"></span>
               <span className="relative flex items-center gap-2">
                 Explore GitHub

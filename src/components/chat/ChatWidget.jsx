@@ -6,6 +6,7 @@ import {
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import resumeFile from '../../assets/resume/laksh.pradhwani.resume.pdf'; 
+import { triggerHaptic } from '../../utils/triggerHaptic';
 
 // API Configuration
 const API_URL = 'https://aiapi.ishan.vip/api/chat';
@@ -70,7 +71,7 @@ function ChatWidget() {
 
   // --- EFFECTS ---
   
-  // Show notification after 3s
+  // Show notification after 3s (Desktop only logic applied in render)
   useEffect(() => {
     const timer = setTimeout(() => {
         if (!isOpen) setShowNotification(true);
@@ -130,6 +131,11 @@ function ChatWidget() {
   }, [isOpen, hasBooted]);
 
   // --- ACTIONS ---
+  const handleToggle = () => {
+      triggerHaptic();
+      setIsOpen(!isOpen);
+  };
+
   const handleCopyEmail = () => {
     navigator.clipboard.writeText('contact@lakshp.live');
     setChatMessages(prev => [...prev, { sender: 'Aurora', content: '📧 Email copied to clipboard!', type: 'text' }]);
@@ -185,14 +191,14 @@ function ChatWidget() {
 
   return (
     <>
-      {/* 1. NOTIFICATION BUBBLE (Enhanced Visibility) */}
+      {/* 1. NOTIFICATION BUBBLE (Enhanced Visibility, Hidden on Mobile) */}
       <AnimatePresence>
         {showNotification && !isOpen && (
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-            className="fixed bottom-[85px] right-6 z-50 cursor-pointer origin-bottom-right"
+            className="fixed bottom-[85px] right-6 z-50 cursor-pointer origin-bottom-right hidden md:block"
             onClick={() => setIsOpen(true)}
           >
             <div className="relative bg-slate-900/90 backdrop-blur-xl text-white px-6 py-4 rounded-2xl rounded-br-sm border border-sky-500/30 shadow-[0_0_30px_-10px_rgba(14,165,233,0.4)] hover:border-sky-400/50 hover:shadow-sky-500/30 transition-all duration-300 max-w-[280px]">
@@ -225,130 +231,148 @@ function ChatWidget() {
         )}
       </AnimatePresence>
 
-      {/* 2. CHAT WINDOW (Positioned Above Button) */}
+      {/* 2. CHAT WINDOW (Bottom Sheet on Mobile, Floating on Desktop) */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
-            key="chat-window"
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className={`fixed z-50 flex flex-col rounded-3xl overflow-hidden shadow-[0_0_50px_-10px_rgba(0,0,0,0.6)] border border-white/10 bg-[#0a0a0b]/95 backdrop-blur-xl origin-bottom-right
-              ${isExpanded 
-                ? 'bottom-6 right-6 w-[90vw] h-[80vh] md:w-[600px] md:h-[700px]' 
-                : 'bottom-[80px] right-6 w-[380px] max-w-[calc(100vw-3rem)] h-[550px]'
-              }`}
-          >
-            {/* Background Grain */}
-            <div className="absolute inset-0 opacity-[0.04] pointer-events-none z-0 mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+          <>
+            {/* Backdrop for mobile */}
+            <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm"
+                onClick={() => setIsOpen(false)}
+            />
 
-            {isBooting ? (
-              <div className="flex-1 flex flex-col justify-center items-start p-8 font-mono text-xs leading-7 text-sky-400 z-10">
-                {bootLines.map((line, index) => (
-                  <motion.div key={index} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
-                    <span className="text-sky-600 mr-2">➜</span>{line}
-                  </motion.div>
-                ))}
-                <div className="w-2 h-4 bg-sky-400/80 mt-2 animate-pulse" />
+            <motion.div 
+              key="chat-window"
+              // Desktop: Scale up. Mobile: Slide up.
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className={`fixed z-50 flex flex-col overflow-hidden shadow-[0_0_50px_-10px_rgba(0,0,0,0.6)] border-t border-x md:border border-white/10 bg-[#0a0a0b]/95 backdrop-blur-xl origin-bottom-right
+                bottom-0 left-0 right-0 w-full h-[85dvh] rounded-t-3xl
+                md:bottom-[80px] md:right-6 md:left-auto md:w-[380px] md:max-w-[calc(100vw-3rem)] md:h-[550px] md:rounded-3xl
+                ${isExpanded ? 'md:w-[600px] md:h-[700px]' : ''}
+              `}
+            >
+              {/* Mobile Drag Handle */}
+              <div className="w-full flex justify-center pt-3 pb-1 md:hidden" onClick={() => setIsOpen(false)}>
+                  <div className="w-12 h-1.5 bg-slate-700 rounded-full"></div>
               </div>
-            ) : (
-              <div className="relative z-10 flex flex-col h-full">
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-white/5">
-                  <div>
-                    <div className="text-sm font-bold text-white flex items-center gap-2">
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
-                      </span>
-                      AI Laksh
-                    </div>
-                    <p className="text-[10px] text-slate-400 font-medium ml-4 tracking-wider">ONLINE • v2.0.4</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => setIsExpanded(!isExpanded)} className="text-slate-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
-                      {isExpanded ? <FiMinimize2 size={16} /> : <FiMaximize2 size={16} />}
-                    </button>
-                    <button onClick={clearChat} className="text-[10px] font-medium text-slate-400 hover:text-white px-3 py-1 rounded-full border border-white/10 hover:bg-white/5 transition-all">
-                      Reset
-                    </button>
-                  </div>
-                </div>
 
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5 custom-scrollbar" onWheel={(e) => { e.stopPropagation(); }}>
-                  {chatMessages.length === 0 && (
-                    <div className="h-full flex flex-col items-center justify-center text-center p-6">
-                      <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-4 border border-white/5">
-                        <FiMessageSquare size={24} className="text-sky-500/80" />
-                      </div>
-                      <p className="text-base font-medium text-white mb-2">System Ready</p>
-                      <p className="text-xs text-slate-400 mb-8 leading-relaxed max-w-[200px]">
-                        Ask anything about Laksh's tech stack, projects, or experience.
-                      </p>
-                      <div className="flex flex-wrap justify-center gap-3 w-full">
-                        <ActionChip icon={FiBriefcase} label="View Projects" onClick={handleViewProjects} />
-                        <ActionChip icon={FiCopy} label="Copy Email" onClick={handleCopyEmail} />
-                        <ActionChip icon={FiExternalLink} label="Resume" onClick={handleDownloadResume} />
-                      </div>
-                    </div>
-                  )}
-                  {chatMessages.map((msg, i) => (
-                    <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`flex ${msg.sender === 'You' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed shadow-sm ${
-                        msg.sender === 'You' 
-                          ? 'bg-gradient-to-br from-sky-600 to-blue-600 text-white rounded-br-sm shadow-sky-900/20' 
-                          : 'bg-slate-800/80 text-slate-200 border border-white/5 rounded-bl-sm'
-                      }`}>
-                        {msg.type === 'mdx' ? (
-                          <div className="prose prose-invert prose-p:my-1 text-[13px] prose-a:text-sky-300 prose-code:bg-black/30 prose-code:rounded prose-code:px-1">
-                            <ReactMarkdown>{String(msg.content)}</ReactMarkdown>
-                          </div>
-                        ) : msg.content}
-                      </div>
+              {/* Background Grain */}
+              <div className="absolute inset-0 opacity-[0.04] pointer-events-none z-0 mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+
+              {isBooting ? (
+                <div className="flex-1 flex flex-col justify-center items-start p-8 font-mono text-xs leading-7 text-sky-400 z-10">
+                  {bootLines.map((line, index) => (
+                    <motion.div key={index} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
+                      <span className="text-sky-600 mr-2">➜</span>{line}
                     </motion.div>
                   ))}
-                  {isLoading && (
-                    <div className="flex justify-start">
-                      <div className="bg-slate-800/80 border border-white/5 rounded-2xl rounded-bl-sm px-4 py-3">
-                        <TypingWave />
-                      </div>
-                    </div>
-                  )}
-                  <div ref={messagesEndRef} />
+                  <div className="w-2 h-4 bg-sky-400/80 mt-2 animate-pulse" />
                 </div>
+              ) : (
+                <div className="relative z-10 flex flex-col h-full">
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-white/5">
+                    <div>
+                      <div className="text-sm font-bold text-white flex items-center gap-2">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+                        </span>
+                        AI Laksh
+                      </div>
+                      <p className="text-[10px] text-slate-400 font-medium ml-4 tracking-wider">ONLINE • v2.0.4</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => setIsExpanded(!isExpanded)} className="text-slate-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors hidden md:block">
+                        {isExpanded ? <FiMinimize2 size={16} /> : <FiMaximize2 size={16} />}
+                      </button>
+                      <button onClick={clearChat} className="text-[10px] font-medium text-slate-400 hover:text-white px-3 py-1 rounded-full border border-white/10 hover:bg-white/5 transition-all">
+                        Reset
+                      </button>
+                      <button onClick={() => setIsOpen(false)} className="md:hidden text-slate-400 p-2">
+                          <FiX size={20} />
+                      </button>
+                    </div>
+                  </div>
 
-                {/* Input */}
-                <div className="p-4 bg-gradient-to-t from-black/80 to-transparent">
-                  <div className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-500 to-purple-500 rounded-full opacity-0 group-focus-within:opacity-20 transition duration-500 blur-md"></div>
-                    <input
-                      type="text"
-                      className="relative w-full rounded-full border border-white/10 bg-slate-900/90 pl-5 pr-12 py-3.5 text-sm text-white outline-none focus:border-sky-500/50 transition-all placeholder:text-slate-500 shadow-inner"
-                      placeholder="Ask AI anything..."
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                    />
-                    <button 
-                      onClick={sendMessage} 
-                      disabled={isLoading || !input.trim()} 
-                      className="absolute right-2 top-2 p-2 bg-sky-600 hover:bg-sky-500 rounded-full text-white transition-all disabled:opacity-0 disabled:scale-75 shadow-lg shadow-sky-500/20 active:scale-90"
-                    >
-                      <FiSend size={14} />
-                    </button>
+                  {/* Messages */}
+                  <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5 custom-scrollbar" onWheel={(e) => { e.stopPropagation(); }}>
+                    {chatMessages.length === 0 && (
+                      <div className="h-full flex flex-col items-center justify-center text-center p-6">
+                        <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-4 border border-white/5">
+                          <FiMessageSquare size={24} className="text-sky-500/80" />
+                        </div>
+                        <p className="text-base font-medium text-white mb-2">System Ready</p>
+                        <p className="text-xs text-slate-400 mb-8 leading-relaxed max-w-[200px]">
+                          Ask anything about Laksh's tech stack, projects, or experience.
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-3 w-full">
+                          <ActionChip icon={FiBriefcase} label="View Projects" onClick={handleViewProjects} />
+                          <ActionChip icon={FiCopy} label="Copy Email" onClick={handleCopyEmail} />
+                          <ActionChip icon={FiExternalLink} label="Resume" onClick={handleDownloadResume} />
+                        </div>
+                      </div>
+                    )}
+                    {chatMessages.map((msg, i) => (
+                      <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`flex ${msg.sender === 'You' ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed shadow-sm ${
+                          msg.sender === 'You' 
+                            ? 'bg-gradient-to-br from-sky-600 to-blue-600 text-white rounded-br-sm shadow-sky-900/20' 
+                            : 'bg-slate-800/80 text-slate-200 border border-white/5 rounded-bl-sm'
+                        }`}>
+                          {msg.type === 'mdx' ? (
+                            <div className="prose prose-invert prose-p:my-1 text-[13px] prose-a:text-sky-300 prose-code:bg-black/30 prose-code:rounded prose-code:px-1">
+                              <ReactMarkdown>{String(msg.content)}</ReactMarkdown>
+                            </div>
+                          ) : msg.content}
+                        </div>
+                      </motion.div>
+                    ))}
+                    {isLoading && (
+                      <div className="flex justify-start">
+                        <div className="bg-slate-800/80 border border-white/5 rounded-2xl rounded-bl-sm px-4 py-3">
+                          <TypingWave />
+                        </div>
+                      </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+
+                  {/* Input */}
+                  <div className="p-4 bg-gradient-to-t from-black/80 to-transparent pb-8 md:pb-4">
+                    <div className="relative group">
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-500 to-purple-500 rounded-full opacity-0 group-focus-within:opacity-20 transition duration-500 blur-md"></div>
+                      <input
+                        type="text"
+                        className="relative w-full rounded-full border border-white/10 bg-slate-900/90 pl-5 pr-12 py-3.5 text-sm text-white outline-none focus:border-sky-500/50 transition-all placeholder:text-slate-500 shadow-inner"
+                        placeholder="Ask AI anything..."
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                      />
+                      <button 
+                        onClick={sendMessage} 
+                        disabled={isLoading || !input.trim()} 
+                        className="absolute right-2 top-2 p-2 bg-sky-600 hover:bg-sky-500 rounded-full text-white transition-all disabled:opacity-0 disabled:scale-75 shadow-lg shadow-sky-500/20 active:scale-90"
+                      >
+                        <FiSend size={14} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </motion.div>
+              )}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
       {/* 3. TOGGLE BUTTON (Fixed & SocialSidebar Style) */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className="fixed bottom-6 right-6 z-[60] group flex items-center justify-end w-12 hover:w-36 h-12 rounded-full overflow-hidden transition-all duration-500 ease-out bg-transparent border border-transparent hover:bg-slate-900 hover:border-slate-700 hover:shadow-2xl hover:shadow-sky-900/20 active:scale-95"
         aria-label="Toggle Chat"
       >
