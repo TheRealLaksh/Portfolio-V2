@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FiGithub, FiLinkedin, FiInstagram, FiMail, FiExternalLink, 
-  FiCalendar, FiDownload, FiMusic, FiCpu, FiBriefcase, FiAward 
+  FiCalendar, FiDownload, FiMusic, FiCpu, FiBriefcase, FiAward, FiStar 
 } from 'react-icons/fi';
 import useSpotify from '../../hooks/useSpotify';
+import useGitHub from '../../hooks/useGitHub'; // Import the hook
 import profileImg from '../../assets/images/laksh.pradhwani.webp';
 import resumeFile from '../../assets/resume/laksh.pradhwani.resume.pdf';
 import { skillsData } from '../../data/skillsData';
 
-// --- 1. CONTACT CARD (Updated) ---
+// --- 1. CONTACT CARD ---
 export const ContactCard = () => {
   const [time, setTime] = useState('');
   const [isOnline, setIsOnline] = useState(false);
@@ -49,9 +50,9 @@ export const ContactCard = () => {
                 <img src={profileImg} alt="Profile" className="w-full h-full rounded-full object-cover border-2 border-slate-900" />
             </div>
             <div className="flex gap-2">
-                <a href="https://github.com/TheRealLaksh" target="_blank" rel="noreferrer" className="social-btn"><FiGithub size={14} /></a>
-                <a href="https://linkedin.com/in/laksh-pradhwani" target="_blank" rel="noreferrer" className="social-btn"><FiLinkedin size={14} /></a>
-                <a href="https://www.instagram.com/_.lakshp/" target="_blank" rel="noreferrer" className="social-btn"><FiInstagram size={14} /></a>
+                <a href="https://github.com/TheRealLaksh" target="_blank" rel="noreferrer" className="social-btn text-slate-400 hover:text-white transition-colors"><FiGithub size={16} /></a>
+                <a href="https://linkedin.com/in/laksh-pradhwani" target="_blank" rel="noreferrer" className="social-btn text-slate-400 hover:text-blue-400 transition-colors"><FiLinkedin size={16} /></a>
+                <a href="https://www.instagram.com/_.lakshp/" target="_blank" rel="noreferrer" className="social-btn text-slate-400 hover:text-pink-400 transition-colors"><FiInstagram size={16} /></a>
             </div>
           </div>
 
@@ -83,25 +84,84 @@ export const ContactCard = () => {
   );
 };
 
-// --- 2. PROJECT SPOTLIGHT CARD ---
-export const ProjectCard = () => (
-  <div className="w-[280px] bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-xl">
-     <div className="aspect-video w-full bg-slate-800 rounded-lg mb-3 overflow-hidden relative group">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
-        {/* Placeholder for project image or gradient */}
-        <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600"></div> 
-        <div className="absolute bottom-3 left-3 z-20">
-           <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/20 px-2 py-0.5 rounded border border-indigo-500/30">FEATURED</span>
+// --- 2. PROJECT SPOTLIGHT CARD (Carousel) ---
+export const ProjectCard = () => {
+  const { projects, loading, error } = useGitHub();
+
+  if (loading) return (
+    <div className="w-[280px] p-4 bg-slate-900/90 rounded-2xl border border-white/10">
+      <div className="animate-pulse space-y-3">
+        <div className="h-28 bg-slate-800 rounded-lg"></div>
+        <div className="h-4 bg-slate-800 rounded w-3/4"></div>
+        <div className="h-3 bg-slate-800 rounded w-1/2"></div>
+      </div>
+    </div>
+  );
+
+  if (error || projects.length === 0) return (
+    <div className="w-[280px] p-4 bg-slate-900/90 rounded-2xl border border-red-500/30 text-red-400 text-xs">
+      Unable to load projects. Check connection.
+    </div>
+  );
+
+  return (
+    <div className="flex gap-4 overflow-x-auto pb-4 max-w-[85vw] md:max-w-[500px] snap-x custom-scrollbar">
+      {projects.map((repo) => (
+        <div key={repo.id} className="min-w-[280px] snap-center bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-xl flex flex-col">
+           {/* Card Thumbnail */}
+           <div className="aspect-video w-full bg-slate-800 rounded-lg mb-3 overflow-hidden relative group">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+              
+              {/* Dynamic Gradient Background based on ID to distinguish cards */}
+              <div 
+                className="w-full h-full opacity-60 transition-transform duration-700 group-hover:scale-110" 
+                style={{ 
+                    background: `linear-gradient(135deg, hsl(${repo.id % 360}, 60%, 20%), hsl(${(repo.id + 100) % 360}, 60%, 40%))` 
+                }}
+              ></div>
+
+              <div className="absolute bottom-3 left-3 z-20 flex flex-wrap gap-1">
+                 <span className="text-[9px] font-bold text-white bg-white/10 backdrop-blur-md px-2 py-0.5 rounded border border-white/10 uppercase tracking-wide">
+                    {repo.genre || 'CODE'}
+                 </span>
+                 {repo.stars > 0 && (
+                   <span className="text-[9px] font-bold text-yellow-300 bg-black/40 backdrop-blur-md px-2 py-0.5 rounded border border-yellow-500/30 flex items-center gap-1">
+                      <FiStar size={8} fill="currentColor" /> {repo.stars}
+                   </span>
+                 )}
+              </div>
+           </div>
+
+           <h4 className="text-white font-bold mb-1 truncate">{repo.name}</h4>
+           <p className="text-xs text-slate-400 mb-4 line-clamp-2 h-8 leading-relaxed">
+             {repo.description || "A cool project built with modern tech."}
+           </p>
+
+           <div className="flex gap-2 mt-auto">
+              <a 
+                href={repo.url} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 py-2.5 rounded-lg text-center text-xs font-medium text-slate-300 transition-colors flex items-center justify-center gap-2 group"
+              >
+                <FiGithub className="group-hover:text-white" /> Code
+              </a>
+              {repo.demo && (
+                <a 
+                  href={repo.demo} 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white py-2.5 rounded-lg text-center text-xs font-bold transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2"
+                >
+                  <FiExternalLink /> Live
+                </a>
+              )}
+           </div>
         </div>
-     </div>
-     <h4 className="text-white font-bold mb-1">GigX Platform</h4>
-     <p className="text-xs text-slate-400 mb-4 line-clamp-2">A full-stack gig listing platform with secure auth, role-based dashboards, and scalable architecture.</p>
-     <div className="flex gap-2">
-        <a href="https://github.com/TheRealLaksh" target="_blank" rel="noreferrer" className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 py-2 rounded-lg text-center text-xs font-medium text-slate-300 transition-colors">View Code</a>
-        <button className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg text-xs font-bold transition-colors">Live Demo</button>
-     </div>
-  </div>
-);
+      ))}
+    </div>
+  );
+};
 
 // --- 3. EXPERIENCE / ROLE CARD ---
 export const ExperienceCard = () => (
@@ -117,6 +177,7 @@ export const ExperienceCard = () => (
         <div className="h-[1px] w-full bg-white/10 mb-3"></div>
         <ul className="text-[11px] text-slate-400 space-y-1.5 list-disc pl-3">
            <li>Built dynamic React UIs & Redux states.</li>
+           <li>Collaborated on industry-level projects.</li>
            <li>Reduced load times by 20%.</li>
         </ul>
      </div>
