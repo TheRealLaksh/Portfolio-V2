@@ -17,6 +17,35 @@ const Experience = () => {
     restDelta: 0.001
   });
 
+  // FIX: Define static mappings for dynamic themes so Tailwind can detect them
+  const themeStyles = {
+    sky: {
+      badge: "text-sky-400 border-sky-500/20 bg-sky-500/10",
+      borderHover: "hover:border-sky-500/30",
+      shadowHover: "group-hover:shadow-sky-500/10",
+      dot: "bg-sky-500"
+    },
+    purple: {
+      badge: "text-purple-400 border-purple-500/20 bg-purple-500/10",
+      borderHover: "hover:border-purple-500/30",
+      shadowHover: "group-hover:shadow-purple-500/10",
+      dot: "bg-purple-500"
+    },
+    teal: {
+      badge: "text-teal-400 border-teal-500/20 bg-teal-500/10",
+      borderHover: "hover:border-teal-500/30",
+      shadowHover: "group-hover:shadow-teal-500/10",
+      dot: "bg-teal-500"
+    },
+    // Fallback for safety
+    default: {
+      badge: "text-slate-400 border-slate-500/20 bg-slate-500/10",
+      borderHover: "hover:border-slate-500/30",
+      shadowHover: "group-hover:shadow-slate-500/10",
+      dot: "bg-slate-500"
+    }
+  };
+
   return (
     <section id="experience" ref={containerRef} className="py-20 relative overflow-hidden">
       
@@ -26,7 +55,7 @@ const Experience = () => {
         
         <div className="text-center mb-16 md:mb-24">
           <TextReveal className="flex justify-center">
-             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">Experience</h2>
+             <h2 className="section-title text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">Experience</h2>
           </TextReveal>
           <div className="h-1 w-20 bg-gradient-to-r from-sky-500 to-purple-500 mx-auto rounded-full"></div>
         </div>
@@ -43,7 +72,9 @@ const Experience = () => {
 
           {experienceData.map((item, index) => {
             const isLeft = index % 2 === 0;
-            const themeColor = item.theme || 'sky'; 
+            // FIX: Retrieve styles from the lookup object
+            const themeKey = item.theme || 'sky';
+            const styles = themeStyles[themeKey] || themeStyles.default;
 
             return (
               <motion.div 
@@ -63,10 +94,10 @@ const Experience = () => {
                   
                     <div 
                         className={`bg-zinc-900/60 backdrop-blur-xl p-5 md:p-6 rounded-2xl border border-white/5 transition-all duration-300 hover:bg-zinc-900/90 active:scale-95 group-hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]
-                        hover:border-${themeColor}-500/30 group-hover:shadow-${themeColor}-500/10`}
+                        ${styles.borderHover} ${styles.shadowHover}`}
                     >
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
-                            <span className={`text-${themeColor}-400 text-[10px] md:text-xs font-mono border border-${themeColor}-500/20 bg-${themeColor}-500/10 px-2 py-0.5 rounded-full`}>
+                            <span className={`text-[10px] md:text-xs font-mono border px-2 py-0.5 rounded-full ${styles.badge}`}>
                                 {item.date}
                             </span>
                         </div>
@@ -96,7 +127,7 @@ const Experience = () => {
                   <motion.div 
                     whileInView={{ scale: [1, 1.5, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className={`w-2.5 h-2.5 md:w-3 md:h-3 bg-${themeColor}-500 rounded-full shadow-[0_0_10px_currentColor]`}
+                    className={`w-2.5 h-2.5 md:w-3 md:h-3 rounded-full shadow-[0_0_10px_currentColor] ${styles.dot}`}
                   ></motion.div>
                 </div>
 
