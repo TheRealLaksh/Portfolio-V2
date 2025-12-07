@@ -34,33 +34,46 @@ export const useChat = () => {
     setChatMessages((prev) => [...prev, msg]);
   };
 
-  // --- LOGIC TO DETECT CARD TYPE ---
+  // --- 1. KEYWORD DETECTION ENGINE ---
   const detectCardTrigger = (text) => {
     const lowerText = text.toLowerCase();
-    if (lowerText.includes('project') || lowerText.includes('work') || lowerText.includes('built')) return 'project';
-    if (lowerText.includes('experience') || lowerText.includes('job') || lowerText.includes('intern')) return 'experience';
-    if (lowerText.includes('stack') || lowerText.includes('tech') || lowerText.includes('skill')) return 'stack';
-    if (lowerText.includes('music') || lowerText.includes('song') || lowerText.includes('vibe') || lowerText.includes('listening')) return 'vibe';
-    if (lowerText.includes('contact') || lowerText.includes('email') || lowerText.includes('hire')) return 'contact';
+    
+    // Project Triggers
+    if (['project', 'work', 'build', 'built', 'github', 'repo', 'portfolio'].some(k => lowerText.includes(k))) return 'project';
+    
+    // Experience Triggers
+    if (['experience', 'job', 'work', 'intern', 'company', 'career', 'role'].some(k => lowerText.includes(k))) return 'experience';
+    
+    // Tech Stack Triggers
+    if (['stack', 'tech', 'skill', 'tool', 'language', 'framework', 'react', 'node'].some(k => lowerText.includes(k))) return 'stack';
+    
+    // Vibe/Spotify Triggers (Expanded)
+    if (['music', 'song', 'vibe', 'listening', 'spotify', 'playing', 'sound', 'track', 'playlist', 'hear'].some(k => lowerText.includes(k))) return 'vibe';
+    
+    // Contact Triggers
+    if (['contact', 'email', 'mail', 'hire', 'call', 'meet', 'reach'].some(k => lowerText.includes(k))) return 'contact';
+    
     return null;
   };
 
-  // --- CUSTOM REPLIES FOR CARDS ---
-  const customReplies = {
-    project: "Here are a few highlights from my GitHub. You can swipe to see more!",
-    experience: "I've had the opportunity to work with some great teams. Here is my timeline:",
-    stack: "Here is the technical arsenal I use to build digital products:",
-    vibe: "Connecting to Spotify API... Here is what I'm vibing to right now! 🎧",
-    contact: "I'd love to connect! Here is my contact card."
+  // --- 2. CUSTOM OVERRIDE RESPONSES ---
+  const replyOverrides = {
+    project: "I've pulled up Laksh's latest GitHub shipments for you. Swipe to explore!",
+    experience: "Here is a timeline of Laksh's professional journey and internships.",
+    stack: "These are the weapons in Laksh's technical arsenal:",
+    vibe: "Connecting to Spotify... Here's what keeps Laksh in the zone right now! 🎧",
+    contact: "I'd love to help you get in touch. Here is his contact card.",
+    education: "Laksh is a National Coding Champ! Here are his academic highlights."
   };
 
   const sendMessage = async (messageText) => {
     if (!messageText.trim() || isLoading) return;
 
+    // 1. Add User Message
     addMessage({ sender: 'You', content: messageText, type: 'text' });
     setIsLoading(true);
 
-    // 1. Detect Local Trigger
+    // 2. Determine Intent locally
     const cardTrigger = detectCardTrigger(messageText);
 
     try {
@@ -76,22 +89,21 @@ export const useChat = () => {
       let aiReply = data?.reply || '';
       let triggerCard = cardTrigger;
 
-      // 2. Priority Check: If Backend explicitly requests a card
+      // 3. Priority Check: If Backend explicitly requests a card (e.g., [SHOW_CONTACT_CARD])
       if (aiReply.includes('[SHOW_CONTACT_CARD]')) {
         triggerCard = 'contact';
         aiReply = aiReply.replace('[SHOW_CONTACT_CARD]', '');
       }
 
-      // 3. OVERRIDE LOGIC: If a local trigger was found, replace the generic AI text
-      // This prevents the "I don't know what music he listens to" response.
-      if (cardTrigger && customReplies[cardTrigger]) {
-        aiReply = customReplies[cardTrigger];
+      // 4. OVERRIDE TEXT: If we triggered a card locally, ignore the backend's generic text
+      if (triggerCard && replyOverrides[triggerCard]) {
+        aiReply = replyOverrides[triggerCard];
       }
 
-      // 4. Add Text Reply
+      // 5. Add Final Response
       addMessage({ sender: 'Aurora', content: aiReply, type: 'mdx' });
 
-      // 5. Add Card (if triggered)
+      // 6. Show Card (with delay for effect)
       if (triggerCard) {
         setTimeout(() => {
           triggerHaptic();
@@ -100,7 +112,7 @@ export const useChat = () => {
       }
 
     } catch (error) {
-      addMessage({ sender: 'Aurora', content: 'Could you please repeat your request.', type: 'text' });
+      addMessage({ sender: 'Aurora', content: 'My connection seems a bit unstable. Could you repeat that?', type: 'text' });
     } finally {
       setIsLoading(false);
     }
