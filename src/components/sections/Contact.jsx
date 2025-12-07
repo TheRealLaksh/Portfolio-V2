@@ -18,11 +18,16 @@ const Contact = () => {
   // 1. Scale: Pops slightly into view (0.95 -> 1.0)
   const scale = useTransform(scrollYProgress, [0, 1], [0.95, 1]);
   
-  // 2. Border: Goes from faint (0.1) to solid (0.6)
-  const borderOpacity = useTransform(scrollYProgress, [0, 1], [0.1, 0.6]);
-  
-  // 3. Glow: Background fills with a very faint blue light
+  // 2. Glow: Background fills with a very faint blue light
   const bgGlow = useTransform(scrollYProgress, [0, 1], ["rgba(14, 165, 233, 0)", "rgba(14, 165, 233, 0.05)"]);
+
+  // 3. FIX: Create the border color string directly using useTransform
+  // Interpolating MotionValue inside a string literal (e.g. `rgba(..., ${value})`) fails in React render
+  const borderColor = useTransform(
+    scrollYProgress, 
+    [0, 1], 
+    ["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.6)"]
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,8 +96,6 @@ const Contact = () => {
                   </div>
                </div>
             </Reveal>
-            
-            {/* Social Icons - (You can paste your existing Social Icons block here if needed) */}
           </div>
 
           {/* Right Column: The Holographic Form */}
@@ -101,7 +104,7 @@ const Contact = () => {
                 style={{ 
                     scale, 
                     backgroundColor: bgGlow,
-                    borderColor: `rgba(255, 255, 255, ${borderOpacity})` // Dynamic border opacity
+                    borderColor: borderColor // FIX: Using the transformed motion value
                 }}
                 className="backdrop-blur-md border border-slate-800 p-8 rounded-2xl shadow-xl relative group overflow-hidden h-full transition-colors duration-500"
             >
@@ -111,21 +114,16 @@ const Contact = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6 relative z-10">
                         <div className="space-y-2">
-                        {/* Added htmlFor and id */}
                         <label htmlFor="name" className="text-sm text-slate-400 font-medium ml-1">Name</label>
-                        {/* Added id and autoComplete */}
                         <input id="name" autoComplete="name" type="text" name="name" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-600" placeholder="Your Name" required />
                         </div>
                         <div className="space-y-2">
-                        {/* Added htmlFor and id */}
                         <label htmlFor="email" className="text-sm text-slate-400 font-medium ml-1">Email</label>
-                        {/* Added id and autoComplete */}
                         <input id="email" autoComplete="email" type="email" name="email" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-600" placeholder="your@email.com" required />
                         </div>
                     </div>
 
                     <div className="space-y-2 mb-6 relative z-10">
-                        {/* Added htmlFor and id */}
                         <label htmlFor="subject" className="text-sm text-slate-400 font-medium ml-1">Subject</label>
                         <select id="subject" name="subject" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all">
                         <option value="Project Proposal">Project Proposal</option>
@@ -136,7 +134,6 @@ const Contact = () => {
                     </div>
 
                     <div className="space-y-2 mb-8 relative z-10">
-                        {/* Added htmlFor and id */}
                         <label htmlFor="message" className="text-sm text-slate-400 font-medium ml-1">Message</label>
                         <textarea id="message" name="message" rows="5" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-600" placeholder="Tell me about your project..." required></textarea>
                     </div>

@@ -165,46 +165,76 @@ export const ProjectCard = () => {
 };
 
 // --- 3. EXPERIENCE / ROLE CARD ---
-export const ExperienceCard = () => (
-  <div className="flex gap-4 overflow-x-auto pb-4 max-w-[85vw] md:max-w-[500px] snap-x custom-scrollbar">
-     {experienceData.map((item) => (
-       <div key={item.id} className="min-w-[280px] snap-center bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-lg relative overflow-hidden flex flex-col">
-          <div className={`absolute top-0 right-0 p-3 opacity-10 text-${item.theme || 'sky'}-500`}><FiBriefcase size={80} /></div>
-          
-          <div className="relative z-10 flex-1">
-             <div className="flex justify-between items-start mb-3">
-                <div className="w-12 h-12 rounded-xl bg-white p-1 flex items-center justify-center">
-                   <img src={item.logo} alt={item.company} className="w-full h-full object-contain" />
+export const ExperienceCard = () => {
+  // FIX: Helper to get static classes for themes
+  const themeMap = {
+    sky: {
+      text: "text-sky-500",
+      pill: "border-sky-500/30 bg-sky-500/10 text-sky-400",
+      company: "text-sky-400"
+    },
+    purple: {
+      text: "text-purple-500",
+      pill: "border-purple-500/30 bg-purple-500/10 text-purple-400",
+      company: "text-purple-400"
+    },
+    teal: {
+      text: "text-teal-500",
+      pill: "border-teal-500/30 bg-teal-500/10 text-teal-400",
+      company: "text-teal-400"
+    },
+    default: {
+      text: "text-slate-500",
+      pill: "border-slate-500/30 bg-slate-500/10 text-slate-400",
+      company: "text-slate-400"
+    }
+  };
+
+  return (
+    <div className="flex gap-4 overflow-x-auto pb-4 max-w-[85vw] md:max-w-[500px] snap-x custom-scrollbar">
+      {experienceData.map((item) => {
+        const theme = themeMap[item.theme] || themeMap.default;
+        
+        return (
+          <div key={item.id} className="min-w-[280px] snap-center bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-lg relative overflow-hidden flex flex-col">
+              <div className={`absolute top-0 right-0 p-3 opacity-10 ${theme.text}`}><FiBriefcase size={80} /></div>
+              
+              <div className="relative z-10 flex-1">
+                <div className="flex justify-between items-start mb-3">
+                    <div className="w-12 h-12 rounded-xl bg-white p-1 flex items-center justify-center">
+                      <img src={item.logo} alt={item.company} className="w-full h-full object-contain" />
+                    </div>
+                    <span className={`text-[10px] font-mono border px-2 py-1 rounded-full ${theme.pill}`}>
+                      {item.date}
+                    </span>
                 </div>
-                <span className={`text-[10px] font-mono border border-${item.theme || 'sky'}-500/30 bg-${item.theme || 'sky'}-500/10 text-${item.theme || 'sky'}-400 px-2 py-1 rounded-full`}>
-                   {item.date}
-                </span>
-             </div>
 
-             <h4 className="text-white font-bold text-lg leading-tight mb-0.5">{item.title}</h4>
-             <p className={`text-${item.theme || 'sky'}-400 text-xs font-medium mb-3`}>{item.company}</p>
-             
-             <div className="h-[1px] w-full bg-white/10 mb-3"></div>
-             
-             <p className="text-xs text-slate-400 leading-relaxed mb-4 line-clamp-4">
-                {item.description}
-             </p>
-          </div>
+                <h4 className="text-white font-bold text-lg leading-tight mb-0.5">{item.title}</h4>
+                <p className={`${theme.company} text-xs font-medium mb-3`}>{item.company}</p>
+                
+                <div className="h-[1px] w-full bg-white/10 mb-3"></div>
+                
+                <p className="text-xs text-slate-400 leading-relaxed mb-4 line-clamp-4">
+                    {item.description}
+                </p>
+              </div>
 
-          <div className="flex flex-wrap gap-2 mt-auto relative z-10">
-             {item.skills.slice(0, 3).map((skill, i) => (
-                <span key={i} className="text-[10px] text-slate-300 bg-slate-800/80 border border-white/5 px-2 py-1 rounded-md">
-                   {skill}
-                </span>
-             ))}
-             {item.skills.length > 3 && (
-                <span className="text-[10px] text-slate-500 px-1 py-1">+ {item.skills.length - 3}</span>
-             )}
+              <div className="flex flex-wrap gap-2 mt-auto relative z-10">
+                {item.skills.slice(0, 3).map((skill, i) => (
+                    <span key={i} className="text-[10px] text-slate-300 bg-slate-800/80 border border-white/5 px-2 py-1 rounded-md">
+                      {skill}
+                    </span>
+                ))}
+                {item.skills.length > 3 && (
+                    <span className="text-[10px] text-slate-500 px-1 py-1">+ {item.skills.length - 3}</span>
+                )}
+              </div>
           </div>
-       </div>
-     ))}
-  </div>
-);
+        );
+      })}
+    </div>
+  );
+};
 
 // --- 4. TECH STACK CARD ---
 export const TechStackCard = () => (
