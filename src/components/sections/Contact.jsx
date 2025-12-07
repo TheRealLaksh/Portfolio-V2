@@ -111,18 +111,23 @@ const Contact = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6 relative z-10">
                         <div className="space-y-2">
-                        <label className="text-sm text-slate-400 font-medium ml-1">Name</label>
-                        <input type="text" name="name" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-600" placeholder="Your Name" required />
+                        {/* Added htmlFor and id */}
+                        <label htmlFor="name" className="text-sm text-slate-400 font-medium ml-1">Name</label>
+                        {/* Added id and autoComplete */}
+                        <input id="name" autoComplete="name" type="text" name="name" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-600" placeholder="Your Name" required />
                         </div>
                         <div className="space-y-2">
-                        <label className="text-sm text-slate-400 font-medium ml-1">Email</label>
-                        <input type="email" name="email" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-600" placeholder="your@email.com" required />
+                        {/* Added htmlFor and id */}
+                        <label htmlFor="email" className="text-sm text-slate-400 font-medium ml-1">Email</label>
+                        {/* Added id and autoComplete */}
+                        <input id="email" autoComplete="email" type="email" name="email" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-600" placeholder="your@email.com" required />
                         </div>
                     </div>
 
                     <div className="space-y-2 mb-6 relative z-10">
-                        <label className="text-sm text-slate-400 font-medium ml-1">Subject</label>
-                        <select name="subject" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all">
+                        {/* Added htmlFor and id */}
+                        <label htmlFor="subject" className="text-sm text-slate-400 font-medium ml-1">Subject</label>
+                        <select id="subject" name="subject" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all">
                         <option value="Project Proposal">Project Proposal</option>
                         <option value="Internship Offer">Internship Offer</option>
                         <option value="Freelance Work">Freelance Work</option>
@@ -131,8 +136,9 @@ const Contact = () => {
                     </div>
 
                     <div className="space-y-2 mb-8 relative z-10">
-                        <label className="text-sm text-slate-400 font-medium ml-1">Message</label>
-                        <textarea name="message" rows="5" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-600" placeholder="Tell me about your project..." required></textarea>
+                        {/* Added htmlFor and id */}
+                        <label htmlFor="message" className="text-sm text-slate-400 font-medium ml-1">Message</label>
+                        <textarea id="message" name="message" rows="5" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-600" placeholder="Tell me about your project..." required></textarea>
                     </div>
 
                     <button 
