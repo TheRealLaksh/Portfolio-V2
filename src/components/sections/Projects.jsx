@@ -66,8 +66,6 @@ const Projects = () => {
           </div>
         </TextReveal>
 
-        {/* MOBILE: normal vertical list, no horizontal scroll
-            DESKTOP: 2–3 column grid */}
         <div
           id="github-projects-grid"
           className="
@@ -109,24 +107,38 @@ const Projects = () => {
                           {Icon}
                         </div>
 
+                        {/* ✅ SOCIAL SIDEBAR STYLE BUTTONS */}
                         <div className="flex gap-3">
                           {repo.demo && (
                             <a
                               href={repo.demo}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-800/50 border border-slate-700 text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                              className="group relative flex items-center justify-start w-10 hover:w-28 h-10 rounded-full overflow-hidden transition-all duration-500 ease-out bg-transparent border border-transparent hover:bg-slate-800 hover:border-slate-700 hover:shadow-lg hover:shadow-emerald-900/20"
                             >
-                              <FiExternalLink size={18} />
+                              <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              <div className="w-10 h-10 flex items-center justify-center shrink-0 z-10 text-slate-400 group-hover:text-emerald-400 transition-colors duration-300">
+                                <FiExternalLink size={18} />
+                              </div>
+                              <span className="opacity-0 group-hover:opacity-100 text-emerald-400 font-medium text-sm whitespace-nowrap transition-all duration-500 delay-100 absolute left-10 pl-1">
+                                Live
+                              </span>
                             </a>
                           )}
+
                           <a
                             href={repo.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-800/50 border border-slate-700 text-white hover:bg-white/10 transition-colors"
+                            className="group relative flex items-center justify-start w-10 hover:w-28 h-10 rounded-full overflow-hidden transition-all duration-500 ease-out bg-transparent border border-transparent hover:bg-slate-800 hover:border-slate-700 hover:shadow-lg hover:shadow-green-900/20"
                           >
-                            <FiGithub size={18} />
+                            <div className="absolute inset-0 bg-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="w-10 h-10 flex items-center justify-center shrink-0 z-10 text-slate-400 group-hover:text-green-400 transition-colors duration-300">
+                              <FiGithub size={18} />
+                            </div>
+                            <span className="opacity-0 group-hover:opacity-100 text-green-400 font-medium text-sm whitespace-nowrap transition-all duration-500 delay-100 absolute left-10 pl-1">
+                              Code
+                            </span>
                           </a>
                         </div>
                       </div>
