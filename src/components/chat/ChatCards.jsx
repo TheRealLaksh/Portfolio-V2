@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FiGithub, FiLinkedin, FiInstagram, FiMail, FiExternalLink, 
-  FiCalendar, FiDownload, FiMusic, FiCpu, FiBriefcase, FiStar, FiCheck 
-} from 'react-icons/fi'; // Added FiCheck
+  FiCalendar, FiDownload, FiMusic, FiCpu, FiBriefcase, FiStar, FiCheck, FiCopy
+} from 'react-icons/fi'; 
 import useSpotify from '../../hooks/useSpotify';
 import useGitHub from '../../hooks/useGitHub';
 import profileImg from '../../assets/images/laksh.pradhwani.webp';
@@ -15,7 +15,7 @@ import { experienceData } from '../../data/timelineData';
 export const ContactCard = () => {
   const [time, setTime] = useState('');
   const [isOnline, setIsOnline] = useState(false);
-  const [copied, setCopied] = useState(false); // New state for copy feedback
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const updateTime = () => {
@@ -68,7 +68,6 @@ export const ContactCard = () => {
           <p className="text-sky-400/80 text-xs font-medium mb-4">Full Stack Developer</p>
 
           <div className="space-y-2">
-            {/* UPDATED EMAIL BUTTON */}
             <button 
               onClick={handleCopyEmail}
               className="w-full flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 transition-all group active:scale-95"
