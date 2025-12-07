@@ -10,9 +10,7 @@ import { triggerHaptic } from '../../utils/triggerHaptic';
 import { cn } from '../../utils/cn';
 
 // API Configuration
-const API_URL = import.meta.env.DEV 
-  ? '/api/chat' 
-  : 'https://ai-backend-2.vercel.app/api/chat';
+const API_URL = 'https://ai-backend-2.vercel.app/api/chat';
 const API_KEY = 'AI-Laksh123';
 
 // --- COMPONENTS ---
