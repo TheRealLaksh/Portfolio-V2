@@ -31,7 +31,7 @@ const langColors = {
 
 // Skeleton Loader Component
 const ProjectSkeleton = () => (
-  <div className="flex-shrink-0 w-[85vw] md:w-auto h-[350px] bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 animate-pulse snap-center">
+  <div className="flex-shrink-0 w-[85vw] md:w-auto h-[350px] bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 animate-pulse snap-start">
     <div className="flex justify-between mb-6">
       <div className="w-10 h-10 rounded-full bg-zinc-800"></div>
       <div className="w-20 h-8 rounded-full bg-zinc-800"></div>
@@ -47,7 +47,7 @@ const Projects = () => {
 
   return (
     <section id="projects" className="my-16 sm:my-32 scroll-mt-20 relative z-10">
-      <div className="w-full px-0 md:px-12"> {/* Zero padding mobile for full bleed */}
+      <div className="w-full px-0 md:px-12">
 
         <TextReveal className="mb-8 md:mb-12 px-6">
            <div className="flex items-center justify-between max-w-[1600px] mx-auto">
@@ -56,10 +56,12 @@ const Projects = () => {
            </div>
         </TextReveal>
 
-        {/* Mobile: Horizontal Scroll | Desktop: Grid */}
+        {/* Fixed: Added 'scroll-px-6' to manage padding inside the scroll container properly.
+            This ensures the first item starts with padding and the last item ends with padding.
+        */}
         <div 
             id="github-projects-grid" 
-            className="flex overflow-x-auto snap-x snap-mandatory gap-4 px-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 max-w-[1600px] mx-auto no-scrollbar"
+            className="flex w-full overflow-x-auto snap-x snap-mandatory scroll-px-6 gap-6 px-6 pb-12 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 max-w-[1600px] mx-auto no-scrollbar"
         >
           
           {loading && (
@@ -79,7 +81,7 @@ const Projects = () => {
              const languages = repo.languages.length > 0 ? repo.languages : ["Code"];
 
              return (
-              <Reveal key={repo.id} delay={index * 0.1} className="h-full flex-shrink-0 w-[85vw] md:w-auto snap-center">
+              <Reveal key={repo.id} delay={index * 0.1} className="h-full flex-shrink-0 w-[85vw] md:w-auto snap-start">
                 <div 
                   onClick={triggerHaptic}
                   className="group relative flex flex-col h-full bg-[#050505] border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:border-zinc-600 hover:shadow-2xl hover:-translate-y-1 active:scale-95"
@@ -140,7 +142,7 @@ const Projects = () => {
                       {languages.map((lang, i) => {
                            const colorClass = langColors[lang] || langColors.default;
                            return (
-                             <span key={i} className={`text-[11px] font-semibold px-3 py-1 rounded-md border ${colorClass}`}>
+                             <span key={i} className={`text-[10px] font-semibold px-2.5 py-1 rounded-md border ${colorClass}`}>
                                {lang}
                              </span>
                            );
@@ -152,6 +154,10 @@ const Projects = () => {
               </Reveal>
              );
           })}
+
+          {/* Spacer div to ensure the last item is fully scrollable on mobile */}
+          <div className="w-1 h-1 flex-shrink-0 md:hidden"></div>
+
         </div>
 
         <Reveal delay={0.2}>
@@ -161,7 +167,7 @@ const Projects = () => {
               className="relative inline-flex w-full md:w-auto group items-center justify-center px-8 py-3 overflow-hidden font-medium text-sky-400 border border-sky-400/30 rounded-lg hover:bg-sky-400/10 transition-all duration-300 active:scale-95">
               <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-sky-400 rounded-full group-hover:w-56 group-hover:h-56 opacity-10"></span>
               <span className="relative flex items-center gap-2">
-                Explore GitHub
+                Explore All Repos
                 <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                 </svg>
