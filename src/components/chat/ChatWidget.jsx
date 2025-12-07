@@ -7,6 +7,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import resumeFile from '../../assets/resume/laksh.pradhwani.resume.pdf'; 
 import { triggerHaptic } from '../../utils/triggerHaptic';
+import { cn } from '../../utils/cn'; // Import class merger to fix conflicts
 
 // API Configuration
 const API_URL = 'https://aiapi.ishan.vip/api/chat';
@@ -249,11 +250,18 @@ function ChatWidget() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: "100%", opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className={`fixed z-50 flex flex-col overflow-hidden shadow-[0_0_50px_-10px_rgba(0,0,0,0.6)] border-t border-x md:border border-white/10 bg-[#0a0a0b]/95 backdrop-blur-xl origin-bottom-right
-                bottom-0 left-0 right-0 w-full h-[85dvh] rounded-t-3xl
-                md:bottom-[80px] md:right-6 md:left-auto md:w-[380px] md:max-w-[calc(100vw-3rem)] md:h-[550px] md:rounded-3xl
-                ${isExpanded ? 'md:w-[600px] md:h-[700px]' : ''}
-              `}
+              // FIXED: Uses cn() to properly switch between normal and expanded sizes without class conflicts
+              className={cn(
+                "fixed z-50 flex flex-col overflow-hidden shadow-[0_0_50px_-10px_rgba(0,0,0,0.6)] border-t border-x md:border border-white/10 bg-[#0a0a0b]/95 backdrop-blur-xl origin-bottom-right transition-all duration-300 ease-in-out",
+                // Mobile Base Styles (Bottom Sheet)
+                "bottom-0 left-0 right-0 w-full h-[85dvh] rounded-t-3xl",
+                // Desktop Base Styles (Floating)
+                "md:bottom-[80px] md:right-6 md:left-auto md:max-w-[calc(100vw-3rem)] md:rounded-3xl",
+                // Dynamic Sizing Logic
+                isExpanded 
+                  ? "md:w-[600px] md:h-[700px]" 
+                  : "md:w-[380px] md:h-[550px]"
+              )}
             >
               {/* Mobile Drag Handle */}
               <div className="w-full flex justify-center pt-3 pb-1 md:hidden" onClick={() => setIsOpen(false)}>
