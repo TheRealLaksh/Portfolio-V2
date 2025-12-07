@@ -99,11 +99,6 @@ const About = () => {
 
           {/* LEFT: 1. HOLOGRAPHIC PROFILE CARD */}
           <div className="w-full xl:w-5/12 flex flex-col items-center">
-            {/* FIX: 
-               1. Increased transitionSpeed to 3000ms (Key for smoothness)
-               2. Reduced tilt angles slightly for mobile
-               3. Added style with willChange to force GPU usage
-            */}
             <Tilt 
                 tiltMaxAngleX={8} 
                 tiltMaxAngleY={8} 
