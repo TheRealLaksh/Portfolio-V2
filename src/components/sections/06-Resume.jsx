@@ -33,7 +33,7 @@ const Resume = () => {
 
               {/* View Resume (Emerald) */}
               <a 
-                href={resumeFile} 
+                href="https://profiley.lakshp.live/laksh" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 onClick={triggerHaptic}
