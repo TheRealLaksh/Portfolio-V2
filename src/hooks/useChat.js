@@ -9,13 +9,13 @@ const API_KEY = import.meta.env.VITE_CHAT_API_KEY || 'AI-Laksh123'; // Fallback 
 export const useChat = () => {
   const [chatMessages, setChatMessages] = useState(() => {
     try {
-      const stored = localStorage.getItem('auroraChatMessages');
+      const stored = localStorage.getItem('AI-LakshChatMessages');
       return stored ? JSON.parse(stored) : [];
     } catch { return []; }
   });
 
   const [userId, setUserId] = useState(() => {
-    try { return localStorage.getItem('auroraUserId') || ''; } catch { return ''; }
+    try { return localStorage.getItem('AI-LakshUserId') || ''; } catch { return ''; }
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -24,12 +24,12 @@ export const useChat = () => {
     if (!userId) {
       const newId = 'user-' + Date.now();
       setUserId(newId);
-      localStorage.setItem('auroraUserId', newId);
+      localStorage.setItem('AI-LakshUserId', newId);
     }
   }, [userId]);
 
   useEffect(() => {
-    localStorage.setItem('auroraChatMessages', JSON.stringify(chatMessages));
+    localStorage.setItem('AI-LakshChatMessages', JSON.stringify(chatMessages));
   }, [chatMessages]);
 
   const addMessage = (msg) => {
@@ -102,19 +102,19 @@ export const useChat = () => {
       }
 
       // 5. Add Final Response
-      addMessage({ sender: 'Aurora', content: aiReply, type: 'mdx' });
+      addMessage({ sender: 'AI-Laksh', content: aiReply, type: 'mdx' });
 
       // 6. Show Card (with delay for effect)
       if (triggerCard) {
         setTimeout(() => {
           triggerHaptic();
-          addMessage({ sender: 'Aurora', type: triggerCard });
+          addMessage({ sender: 'AI-Laksh', type: triggerCard });
         }, 600);
       }
 
     } catch (error) {
       console.error(error);
-      addMessage({ sender: 'Aurora', content: 'My connection seems a bit unstable. Could you repeat that?', type: 'text' });
+      addMessage({ sender: 'AI-Laksh', content: 'My connection seems a bit unstable. Could you repeat that?', type: 'text' });
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +122,7 @@ export const useChat = () => {
 
   const clearChat = async () => {
     setChatMessages([]);
-    localStorage.removeItem('auroraChatMessages');
+    localStorage.removeItem('AI-LakshChatMessages');
     try {
       await fetch(API_URL, {
         method: 'DELETE',

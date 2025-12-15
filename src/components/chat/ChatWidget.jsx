@@ -112,7 +112,7 @@ const ChatWidget = () => {
       addMessage({ sender: 'You', content: 'Show me contacts', type: 'text' });
       setTimeout(() => {
         triggerHaptic();
-        addMessage({ sender: 'Aurora', type: 'contact' });
+        addMessage({ sender: 'AI Laksh', type: 'contact' });
       }, 600);
     }
   };
