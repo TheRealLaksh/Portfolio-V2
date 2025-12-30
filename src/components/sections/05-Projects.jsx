@@ -60,7 +60,6 @@ const Projects = () => {
       className="my-16 sm:my-32 scroll-mt-28 sm:scroll-mt-24 relative z-10 overflow-hidden w-full"
     >
       
-      {/* Background Number - Aligned Left-4 */}
       <div className="absolute inset-0 pointer-events-none z-0">
          <Parallax speed={-0.2} className="absolute top-[5%] left-4 text-slate-800/50 text-6xl font-bold font-mono opacity-20">05</Parallax>
       </div>
@@ -114,13 +113,14 @@ const Projects = () => {
                           {Icon}
                         </div>
 
-                        {/* ✅ SOCIAL SIDEBAR STYLE BUTTONS */}
                         <div className="flex gap-3">
                           {repo.demo && (
                             <a
                               href={repo.demo}
                               target="_blank"
                               rel="noopener noreferrer"
+                              // ACCESSIBILITY FIX: Added label
+                              aria-label={`View live demo of ${repo.name}`}
                               className="group relative flex items-center justify-start w-10 hover:w-28 h-10 rounded-full overflow-hidden transition-all duration-500 ease-out bg-transparent border border-transparent hover:bg-slate-800 hover:border-slate-700 hover:shadow-lg hover:shadow-emerald-900/20"
                             >
                               <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -137,6 +137,8 @@ const Projects = () => {
                             href={repo.url}
                             target="_blank"
                             rel="noopener noreferrer"
+                            // ACCESSIBILITY FIX: Added label
+                            aria-label={`View source code for ${repo.name}`}
                             className="group relative flex items-center justify-start w-10 hover:w-28 h-10 rounded-full overflow-hidden transition-all duration-500 ease-out bg-transparent border border-transparent hover:bg-slate-800 hover:border-slate-700 hover:shadow-lg hover:shadow-green-900/20"
                           >
                             <div className="absolute inset-0 bg-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

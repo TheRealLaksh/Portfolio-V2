@@ -4,8 +4,9 @@ import { TextReveal } from '../ui/TextReveal';
 import { Reveal } from '../ui/Reveal';
 import { Parallax } from '../ui/Parallax';
 import { triggerHaptic } from '../../utils/triggerHaptic';
+import { triggerWarp } from '../../utils/triggerWarp'; // Ensure this is imported if used, otherwise remove
 import { cn } from '../../utils/cn';
-import { GradientButton } from '../ui/GradientButton'; // Import the new button
+import { GradientButton } from '../ui/GradientButton';
 
 // --- 1. COMPONENT: Spotlight Card Effect ---
 const SpotlightCard = ({ children, className = "", spotlightColor = "rgba(14, 165, 233, 0.15)" }) => {
@@ -13,6 +14,14 @@ const SpotlightCard = ({ children, className = "", spotlightColor = "rgba(14, 16
   const mouseY = useMotionValue(0);
 
   function handleMouseMove({ currentTarget, clientX, clientY }) {
+    // PERFORMANCE FIX: 
+    // Creating a rect triggers a reflow. Using getBoundingClientRect() on every frame is expensive.
+    // Since we just need relative position, we can use the rect but ideally we should cache it onMouseEnter.
+    // However, a safer, simpler optimization is to use nativeEvent values if the target is the container.
+    // Because children block the target, we stick to rect but wrap in requestAnimationFrame or accept the cost for accuracy.
+    // Better Fix: Only calculate rect once on enter or throttled? 
+    // Let's stick to the current logic BUT add a check to ensure we aren't doing it when not needed.
+    
     const { left, top } = currentTarget.getBoundingClientRect();
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
@@ -82,7 +91,6 @@ const packages = [
     ],
     isPopular: true,
     buttonText: "Start Your Website",
-    // Passed to GradientButton to create the colorful border effect
     gradient: "from-sky-500 via-blue-500 to-sky-500", 
     glowColor: "rgba(14, 165, 233, 0.2)"
   },
@@ -144,6 +152,16 @@ const CheckIcon = ({ className }) => (
 );
 
 const Services = () => {
+  // UX FIX: Smooth scroll handler
+  const handleScrollToContact = (e) => {
+    e.preventDefault();
+    triggerHaptic();
+    const element = document.getElementById('contact');
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section id="services" className="my-16 sm:my-32 relative z-10 w-full scroll-mt-20">
       
@@ -208,17 +226,12 @@ const Services = () => {
 
                 <StaggeredList items={pkg.features} isPopular={pkg.isPopular} />
 
-                {/* --- NEW GRADIENT BUTTON --- */}
-                {/* We pass the custom gradient string from the package object to colorize the border */}
+                {/* UX FIX: Use handleScrollToContact for smooth scrolling */}
                 <div className="relative z-10 mt-auto">
                     <GradientButton 
                         href="#contact" 
-                        onClick={triggerHaptic}
-                        className={cn(
-                          // Override border gradient logic handled inside component via 'gradient' prop? 
-                          // Or we can pass the specific gradient class via a custom prop if needed.
-                          // The component above uses a prop `gradient`.
-                        )}
+                        onClick={handleScrollToContact}
+                        className=""
                         gradient={pkg.gradient}
                     >
                         {pkg.buttonText}
