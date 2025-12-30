@@ -1,22 +1,31 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// FIX: Use Environment Variables for sensitive data
-// Fallbacks provided for dev, but recommend using .env
-const LASTFM_USERNAME = import.meta.env.VITE_LASTFM_USERNAME || 'lakshp';
-const LASTFM_API_KEY = import.meta.env.VITE_LASTFM_API_KEY || '0b1d51f7f741582cd0895125d1da45c3';
+// SECURITY FIX: Removed hardcoded keys.
+const LASTFM_USERNAME = import.meta.env.VITE_LASTFM_USERNAME;
+const LASTFM_API_KEY = import.meta.env.VITE_LASTFM_API_KEY;
 
-// Construct URL dynamically
-const API_URL = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=1`;
+const API_URL = (LASTFM_USERNAME && LASTFM_API_KEY)
+  ? `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=1`
+  : null;
 
 const useSpotify = () => {
   const [song, setSong] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!API_URL) {
+      setLoading(false);
+      return;
+    }
+
+    let isMounted = true; // STABILITY FIX: Track mount status
+
     const fetchSong = async () => {
       try {
         const { data } = await axios.get(API_URL);
+        if (!isMounted) return; // Prevent state update if unmounted
+
         const track = data.recenttracks.track[0];
 
         if (track) {
@@ -24,24 +33,30 @@ const useSpotify = () => {
             name: track.name,
             artist: track.artist['#text'],
             album: track.album['#text'],
-            // Check if image exists before accessing index
-            image: track.image[2] ? track.image[2]['#text'] : null, 
+            image: (track.image && track.image.length > 2) ? track.image[2]['#text'] : null, 
             isPlaying: track['@attr']?.nowplaying === 'true',
             url: track.url
           });
         }
       } catch (error) {
-        console.error("Error fetching Last.fm data:", error);
+        if (isMounted) console.error("Error fetching Last.fm data:", error);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchSong();
     
-    // Poll every 10 seconds to check for song changes
-    const interval = setInterval(fetchSong, 10000); 
-    return () => clearInterval(interval);
+    const interval = setInterval(() => {
+        if (!document.hidden && isMounted) {
+            fetchSong();
+        }
+    }, 10000); 
+
+    return () => {
+        isMounted = false; // Cleanup
+        clearInterval(interval);
+    };
   }, []);
 
   return { song, loading };

@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { triggerHaptic } from '../utils/triggerHaptic';
 
-// FIX: Use Environment Variables for API Configuration
-// Define VITE_CHAT_API_URL and VITE_CHAT_API_KEY in your .env file
+// SECURITY FIX: Removed hardcoded fallback keys. 
+// If the ENV variable is missing, it should fail rather than leak a key.
 const API_URL = import.meta.env.VITE_CHAT_API_URL || 'https://ai-backend-2.vercel.app/api/chat';
-const API_KEY = import.meta.env.VITE_CHAT_API_KEY || 'AI-Laksh123'; // Fallback for development
+const API_KEY = import.meta.env.VITE_CHAT_API_KEY;
+
+if (!API_KEY) {
+  console.error("CRITICAL: VITE_CHAT_API_KEY is missing in environment variables.");
+}
 
 export const useChat = () => {
   const [chatMessages, setChatMessages] = useState(() => {
@@ -56,7 +60,8 @@ export const useChat = () => {
     if (['contact', 'email', 'mail', 'hire', 'call', 'meet', 'reach'].some(k => lowerText.includes(k))) return 'contact';
 
     // Services / Packages Triggers (NEW)
-    if (['service', 'package', 'price', 'pricing', 'cost', 'offer', 'sell', 'buy', 'money'].some(k => lowerText.includes(k))) return 'services';
+    // FIX: Removed "money" from triggers to prevent false positives
+    if (['service', 'package', 'price', 'pricing', 'cost', 'offer', 'sell', 'buy'].some(k => lowerText.includes(k))) return 'services';
     
     return null;
   };
@@ -68,20 +73,20 @@ export const useChat = () => {
     stack: "These are the weapons in Laksh's technical arsenal:",
     vibe: "Connecting to Spotify... Here's what keeps Laksh in the zone right now! 🎧",
     contact: "I'd love to help you get in touch. Here is his contact card.",
-    services: "Navigating you to the Services & Pricing section to explore the packages." // NEW
+    services: "Navigating you to the Services & Pricing section to explore the packages."
   };
 
   const sendMessage = async (messageText) => {
     if (!messageText.trim() || isLoading) return;
 
-    // 1. Add User Message
     addMessage({ sender: 'You', content: messageText, type: 'text' });
     setIsLoading(true);
 
-    // 2. Determine Intent locally
     const cardTrigger = detectCardTrigger(messageText);
 
     try {
+      if (!API_KEY) throw new Error("Missing API Configuration");
+
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
@@ -94,21 +99,17 @@ export const useChat = () => {
       let aiReply = data?.reply || '';
       let triggerCard = cardTrigger;
 
-      // 3. Priority Check: If Backend explicitly requests a card (e.g., [SHOW_CONTACT_CARD])
       if (aiReply.includes('[SHOW_CONTACT_CARD]')) {
         triggerCard = 'contact';
         aiReply = aiReply.replace('[SHOW_CONTACT_CARD]', '');
       }
 
-      // 4. OVERRIDE TEXT: If we triggered a card locally, ignore the backend's generic text
       if (triggerCard && replyOverrides[triggerCard]) {
         aiReply = replyOverrides[triggerCard];
       }
 
-      // 5. Add Final Response
       addMessage({ sender: 'AI-Laksh', content: aiReply, type: 'mdx' });
 
-      // 6. Show Card (with delay for effect)
       if (triggerCard) {
         setTimeout(() => {
           triggerHaptic();
@@ -118,7 +119,7 @@ export const useChat = () => {
 
     } catch (error) {
       console.error(error);
-      addMessage({ sender: 'AI-Laksh', content: 'My connection seems a bit unstable. Could you repeat that?', type: 'text' });
+      addMessage({ sender: 'AI-Laksh', content: "I'm having trouble connecting to the server. Please check your connection or try again later.", type: 'text' });
     } finally {
       setIsLoading(false);
     }
@@ -128,11 +129,13 @@ export const useChat = () => {
     setChatMessages([]);
     localStorage.removeItem('AI-LakshChatMessages');
     try {
-      await fetch(API_URL, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
-        body: JSON.stringify({ userId }),
-      });
+      if (API_KEY) {
+        await fetch(API_URL, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+            body: JSON.stringify({ userId }),
+        });
+      }
     } catch (e) { console.error(e); }
   };
 

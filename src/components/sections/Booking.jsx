@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TextReveal } from '../ui/TextReveal';
 import { Reveal } from '../ui/Reveal';
@@ -72,6 +72,14 @@ const Booking = () => {
   });
   const [dates] = useState(getNextDays());
 
+  // STABILITY FIX: Track mount status to prevent memory leaks on async operations
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => { isMounted.current = false; };
+  }, []);
+
   const handleNext = () => setStep((prev) => prev + 1);
   const handleBack = () => setStep((prev) => prev - 1);
 
@@ -79,7 +87,9 @@ const Booking = () => {
     e.preventDefault();
     // Simulate API Call
     setTimeout(() => {
-        handleNext(); // Go to success
+        if (isMounted.current) {
+            handleNext(); // Go to success ONLY if component is still mounted
+        }
     }, 1000);
   };
 
@@ -238,12 +248,10 @@ const Booking = () => {
 
   // --- Main Render ---
   return (
-    // FIX: Changed "my-16 sm:my-32" to "pt-32 pb-20 min-h-screen" to ensure full page height and spacing from navbar
     <section id="booking" className="pt-32 pb-20 min-h-screen relative z-10 w-full">
       
       {/* Background Decor */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        {/* FIX: Changed top-0 to top-20 to ensure text isn't cut off by navbar */}
         <Parallax speed={-0.2} className="absolute top-20 right-10 text-slate-800/30 text-[8rem] font-bold font-mono opacity-20">
           BOOK
         </Parallax>
@@ -266,7 +274,7 @@ const Booking = () => {
                 {/* Glow Effect */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-sky-500 to-transparent opacity-50"></div>
                 
-                {/* Progress Bar (Optional) */}
+                {/* Progress Bar */}
                 {step < 4 && (
                     <div className="flex justify-between mb-8 relative">
                         <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-800 -z-10"></div>

@@ -5,27 +5,31 @@ import { cn } from '../../utils/cn';
 import { triggerWarp } from '../../utils/triggerWarp';
 import { triggerHaptic } from '../../utils/triggerHaptic';
 import { useLenis } from '@studio-freight/react-lenis';
+// FIX: Import router hooks to handle navigation across different pages
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   
-  // Added 'services' to the spy list
   const navIds = ['home', 'about', 'experience', 'skills', 'projects', 'resume', 'services', 'contact'];
   const activeSection = useScrollSpy(navIds);
   const lenis = useLenis();
+  
+  // ROUTING LOGIC
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isHomePage = location.pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setIsVisible(false);
       } else {
         setIsVisible(true);
       }
-      
       setLastScrollY(currentScrollY);
     };
 
@@ -63,7 +67,20 @@ const Navbar = () => {
     e.preventDefault();
     triggerHaptic();
     triggerWarp();
+
+    // NAVIGATION FIX: Handle cross-page navigation
+    if (!isHomePage) {
+        // If not on home, force navigate to home with hash
+        navigate(`/#${id}`);
+        // Optional: Manual scroll fallback if hash doesn't catch immediately
+        setTimeout(() => {
+             const element = document.getElementById(id);
+             if (element) element.scrollIntoView({ behavior: 'auto' });
+        }, 100);
+        return;
+    }
     
+    // Standard Scroll for Home Page
     if (lenis) {
       lenis.scrollTo(`#${id}`, {
         offset: -50,
@@ -131,7 +148,6 @@ const Navbar = () => {
         <FiFileText className="w-4 h-4 md:w-5 md:h-5" />
         <span className={getTextClass('resume')}>Resume</span>
       </a>
-
 
       <a href="#services" onClick={(e) => scrollToSection(e, 'services')} className={getLinkClass('services')}>
         <FiPackage className="w-4 h-4 md:w-5 md:h-5" />

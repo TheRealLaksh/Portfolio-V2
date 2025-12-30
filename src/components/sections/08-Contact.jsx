@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { TextReveal } from '../ui/TextReveal';
 import { Reveal } from '../ui/Reveal';
 import { Parallax } from '../ui/Parallax';
@@ -8,22 +8,22 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState(null); 
   const containerRef = useRef(null);
+  
+  // STABILITY FIX: Track mount status to prevent memory leaks on async operations
+  const isMounted = useRef(true);
 
-  // --- HOLOGRAPHIC SCROLL EFFECT ---
-  // We track when the form enters the viewport
+  useEffect(() => {
+    isMounted.current = true;
+    return () => { isMounted.current = false; };
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "center center"]
   });
 
-  // 1. Scale: Pops slightly into view (0.95 -> 1.0)
   const scale = useTransform(scrollYProgress, [0, 1], [0.95, 1]);
-  
-  // 2. Glow: Background fills with a very faint blue light
   const bgGlow = useTransform(scrollYProgress, [0, 1], ["rgba(14, 165, 233, 0)", "rgba(14, 165, 233, 0.05)"]);
-
-  // 3. FIX: Create the border color string directly using useTransform
-  // Interpolating MotionValue inside a string literal (e.g. `rgba(..., ${value})`) fails in React render
   const borderColor = useTransform(
     scrollYProgress, 
     [0, 1], 
@@ -45,16 +45,30 @@ const Contact = () => {
         headers: { 'Accept': 'application/json' }
       });
 
+      if (!isMounted.current) return; // Prevent state update if unmounted
+
       if (response.ok) {
         setStatus('success');
         form.reset();
-        setTimeout(() => { setStatus(null); setIsSubmitting(false); }, 5000);
+        setTimeout(() => { 
+            if (isMounted.current) {
+                setStatus(null); 
+                setIsSubmitting(false); 
+            }
+        }, 5000);
       } else {
         throw new Error('Failed');
       }
     } catch (error) {
-      setStatus('error');
-      setTimeout(() => { setStatus(null); setIsSubmitting(false); }, 3000);
+      if (isMounted.current) {
+        setStatus('error');
+        setTimeout(() => { 
+            if (isMounted.current) {
+                setStatus(null); 
+                setIsSubmitting(false); 
+            }
+        }, 3000);
+      }
     }
   };
 
@@ -76,7 +90,7 @@ const Contact = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
-          {/* Left Column - Keep standard animation */}
+          {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
             <Reveal delay={0.1}>
                <div className="bg-slate-900/50 backdrop-blur-md border border-slate-800 p-8 rounded-2xl shadow-lg">
@@ -111,12 +125,11 @@ const Contact = () => {
                 style={{ 
                     scale, 
                     backgroundColor: bgGlow,
-                    borderColor: borderColor // FIX: Using the transformed motion value
+                    borderColor: borderColor
                 }}
                 className="backdrop-blur-md border border-slate-800 p-8 rounded-2xl shadow-xl relative group overflow-hidden h-full transition-colors duration-500"
             >
                 <form onSubmit={handleSubmit}>
-                    {/* Animated Glow Spot inside form */}
                     <div className="absolute -top-20 -right-20 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl group-hover:bg-sky-500/20 transition-all duration-700"></div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6 relative z-10">

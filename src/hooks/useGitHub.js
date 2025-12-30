@@ -26,33 +26,28 @@ const useGitHub = () => {
       if (cached) {
         try {
           const { data, timestamp } = JSON.parse(cached);
-          if (Date.now() - timestamp < CACHE_DURATION) {
+          
+          // STABILITY FIX: Ensure 'data' is actually an array before using it.
+          // If it's not an array, it's corrupt -> treat as no cache.
+          if (Array.isArray(data) && Date.now() - timestamp < CACHE_DURATION) {
             setProjects(data);
             setLoading(false);
             return;
           }
         } catch (e) {
-          console.error("Cache parse error", e);
+          // If parsing fails, clear the corrupt data
           localStorage.removeItem(CACHE_KEY);
         }
       }
 
-      // 2. Fetch if no cache
+      // 2. Fetch if no cache or corrupt cache
       try {
         const promises = REPO_NAMES.map(async (repoName) => {
           try {
-            // Fix: Trim repo name to avoid 404s from trailing spaces
             const cleanName = repoName.trim();
             const { data: repo } = await axios.get(`https://api.github.com/repos/${GITHUB_USERNAME}/${cleanName}`);
             
-            // Optional: Fetch languages if needed, or default to empty
-            let langs = {};
-            try {
-               const langRes = await axios.get(repo.languages_url);
-               langs = langRes.data;
-            } catch (e) {
-               console.warn(`Could not fetch languages for ${cleanName}`);
-            }
+            const primaryLang = repo.language ? [repo.language] : [];
             
             let genre = 'code';
             const lowerName = repo.name.toLowerCase();
@@ -69,21 +64,20 @@ const useGitHub = () => {
               url: repo.html_url,
               demo: repo.homepage,
               stars: repo.stargazers_count,
-              languages: Object.keys(langs),
+              languages: primaryLang,
               genre: genre
             };
           } catch (err) {
             console.warn(`Failed to fetch ${repoName}`, err);
-            return null; // Return null so we can filter it out later
+            return null;
           }
         });
 
         const results = await Promise.all(promises);
-        const validData = results.filter(Boolean); // Filter out failed requests (nulls)
+        const validData = results.filter(Boolean);
 
         if (validData.length > 0) {
           setProjects(validData);
-          // Save to Cache
           localStorage.setItem(CACHE_KEY, JSON.stringify({
             data: validData,
             timestamp: Date.now()

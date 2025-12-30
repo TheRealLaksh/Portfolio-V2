@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FiMessageSquare, FiX, FiSend, FiBriefcase, 
-  FiFileText, FiMail, FiMinimize2, FiMaximize2, FiPackage 
+import {
+  FiMessageSquare, FiX, FiSend, FiBriefcase,
+  FiFileText, FiMail, FiMinimize2, FiMaximize2, FiPackage
 } from 'react-icons/fi'; // Added FiPackage
 import { cn } from '../../utils/cn';
 import { triggerHaptic } from '../../utils/triggerHaptic';
@@ -14,7 +14,7 @@ import { TypingWave, ActionChip, ChatBubble } from './ChatUI';
 
 const BootScreen = ({ onComplete }) => {
   const [lines, setLines] = useState([]);
-  
+
   useEffect(() => {
     const logs = [
       "> INITIALIZING NEURAL UPLINK...",
@@ -54,7 +54,7 @@ const ChatWidget = () => {
   const [isBooting, setIsBooting] = useState(false);
   const [hasBooted, setHasBooted] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  
+
   // Custom Hook Logic
   const { chatMessages, isLoading, sendMessage, clearChat, addMessage } = useChat();
   const messagesEndRef = useRef(null);
@@ -89,7 +89,7 @@ const ChatWidget = () => {
   // --- NEW: Handle Redirects for Services ---
   useEffect(() => {
     const lastMsg = chatMessages[chatMessages.length - 1];
-    
+
     if (lastMsg?.type === 'services') {
       // Small delay to let user read the "Navigating..." message
       setTimeout(() => {
@@ -119,15 +119,16 @@ const ChatWidget = () => {
 
   const handleQuickAction = (action) => {
     if (action === 'projects') {
-        setIsOpen(false);
-        document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+      setIsOpen(false);
+      document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
     }
     if (action === 'services') {
-        setIsOpen(false);
-        document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+      setIsOpen(false);
+      document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
     }
     if (action === 'resume') {
-        window.open(resumeFile, '_blank');
+
+      window.open(resumeFile, '_blank', 'noopener,noreferrer');
     }
     if (action === 'contact') {
       addMessage({ sender: 'You', content: 'Show me contacts', type: 'text' });
@@ -149,6 +150,10 @@ const ChatWidget = () => {
             exit={{ opacity: 0, scale: 0.9 }}
             className="fixed bottom-[85px] right-6 z-50 cursor-pointer hidden md:block"
             onClick={() => setIsOpen(true)}
+
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') setIsOpen(true); }}
           >
             <div className="relative bg-slate-900/90 backdrop-blur-xl text-white px-6 py-4 rounded-2xl border border-sky-500/30 shadow-[0_0_30px_-10px_rgba(14,165,233,0.4)] max-w-[280px]">
               <button onClick={(e) => { e.stopPropagation(); setShowNotification(false); }} className="absolute -top-2 -left-2 bg-slate-800 rounded-full p-1 border border-white/10"><FiX size={12} /></button>
@@ -167,7 +172,7 @@ const ChatWidget = () => {
         {isOpen && (
           <>
             <motion.div className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsOpen(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
-            
+
             <motion.div
               initial={{ y: "100%", opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -204,7 +209,7 @@ const ChatWidget = () => {
                   <BootScreen onComplete={() => { setIsBooting(false); setHasBooted(true); }} />
                 ) : (
                   <>
-                    <div 
+                    <div
                       className="flex-1 overflow-y-auto min-h-0 px-5 py-5 space-y-5 custom-scrollbar z-10 overscroll-contain"
                       data-lenis-prevent="true"
                     >
@@ -213,7 +218,7 @@ const ChatWidget = () => {
                           <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-4 border border-white/5"><FiMessageSquare size={24} className="text-sky-500/80" /></div>
                           <p className="text-base font-medium text-white mb-2">System Ready</p>
                           <p className="text-xs text-slate-400 mb-8 max-w-[200px]">Ask anything about Laksh's tech stack, projects, or experience.</p>
-                          
+
                           <div className="flex flex-wrap justify-center gap-3">
                             <ActionChip icon={FiBriefcase} label="View Projects" onClick={() => handleQuickAction('projects')} />
                             <ActionChip icon={FiPackage} label="Services" onClick={() => handleQuickAction('services')} /> {/* NEW Services Chip */}
@@ -222,13 +227,13 @@ const ChatWidget = () => {
                           </div>
                         </div>
                       )}
-                      
+
                       {chatMessages.map((msg, i) => (
                         <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                           <ChatBubble msg={msg} />
                         </motion.div>
                       ))}
-                      
+
                       {isLoading && (
                         <div className="flex justify-start">
                           <div className="bg-slate-800/80 border border-white/5 rounded-2xl rounded-bl-sm px-4 py-3"><TypingWave /></div>

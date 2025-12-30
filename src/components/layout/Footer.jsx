@@ -12,10 +12,18 @@ const Footer = () => {
   const isHovered = useRef(false);
   const animationRef = useRef(null);
 
-  // 1. Clock Logic
+  // LOGIC FIX: Sync clock with actual system minute change
   useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 60000);
-    return () => clearInterval(timer);
+    const updateTime = () => {
+        const now = new Date();
+        setTime(now);
+        // Calculate delay until next minute (plus buffer)
+        const delay = (60 - now.getSeconds()) * 1000;
+        return setTimeout(updateTime, delay);
+    };
+
+    const timeoutId = updateTime();
+    return () => clearTimeout(timeoutId);
   }, []);
 
   // 2. Animation Loop
@@ -80,14 +88,13 @@ const Footer = () => {
   return (
     <footer className="relative w-full bg-[#020203] border-t border-white/5 overflow-hidden pt-14 pb-32 md:pb-14">
       
-      {/* Background Overlay - Made slightly brighter */}
+      {/* Background Overlay */}
       <div className="absolute inset-0 z-0 pointer-events-none"
            style={{ background: "radial-gradient(125% 125% at 50% 10%, rgba(0, 0, 0, 0) 40%, rgba(60, 162, 250, 0.15) 100%)" }}>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 flex flex-col items-center">
         
-        {/* Top Grid Section: Stacked on Mobile, 3 Cols on Desktop */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 w-full mb-12 text-center md:text-left">
           
           {/* 1. Brand Info */}
@@ -105,11 +112,10 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* 2. Links - Hidden on Mobile to save vertical space */}
+          {/* 2. Links */}
           <div className="hidden md:block">
             <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-3 text-sm text-slate-400">
-
               {['Home', 'About', 'Skills', 'Experience', 'Projects', 'Resume', 'Services', 'Contact'].map((link) => (
                 <li key={link}>
                   <a href={`#${link.toLowerCase()}`} className="hover:text-sky-400 transition-colors">
@@ -139,7 +145,8 @@ const Footer = () => {
             {/* Spotify Widget */}
             {song && (
               <div 
-                onClick={() => window.open(song.url, '_blank')}
+                // SECURITY FIX: Added noopener,noreferrer to prevent reverse tabnabbing
+                onClick={() => window.open(song.url, '_blank', 'noopener,noreferrer')}
                 className={`flex items-center gap-3 bg-[#0a0a0b] border border-white/10 pr-4 pl-2 py-2 rounded-full w-max transition-all hover:border-green-500/30 hover:shadow-[0_0_15px_rgba(34,197,94,0.1)] mb-4 cursor-pointer ${song.isPlaying ? 'opacity-100' : 'hidden'}`}
               >
                 <div className="relative w-8 h-8 shrink-0">
@@ -171,7 +178,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* --- INTERACTIVE TEXT (Hidden on Mobile) --- */}
+        {/* --- INTERACTIVE TEXT --- */}
         <div 
           id="footer-hover-container"
           ref={containerRef}
@@ -182,19 +189,18 @@ const Footer = () => {
         >
           <svg className="w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="xMidYMid meet">
             <defs>
-              {/* Brighter Rainbow Gradient */}
               <linearGradient id="textGradient" gradientUnits="userSpaceOnUse" cx="50%" cy="50%" r="25%">
-                <stop offset="0%" stopColor="#facc15" /> {/* Yellow-400 */}
-                <stop offset="25%" stopColor="#f87171" /> {/* Red-400 */}
-                <stop offset="50%" stopColor="#4ade80" /> {/* Green-400 */}
-                <stop offset="75%" stopColor="#22d3ee" /> {/* Cyan-400 */}
-                <stop offset="100%" stopColor="#a78bfa" /> {/* Violet-400 */}
+                <stop offset="0%" stopColor="#facc15" />
+                <stop offset="25%" stopColor="#f87171" />
+                <stop offset="50%" stopColor="#4ade80" />
+                <stop offset="75%" stopColor="#22d3ee" />
+                <stop offset="100%" stopColor="#a78bfa" />
               </linearGradient>
 
               <radialGradient 
                 id="revealMask" 
                 gradientUnits="userSpaceOnUse" 
-                r="30%" // Larger spotlight
+                r="30%" 
                 cx="0" 
                 cy="50" 
                 ref={maskRef}
@@ -207,7 +213,6 @@ const Footer = () => {
                 <rect x="0" y="0" width="100%" height="100%" fill="url(#revealMask)" />
               </mask>
               
-              {/* Glow Filter */}
               <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
                 <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
                 <feMerge>
@@ -217,20 +222,17 @@ const Footer = () => {
               </filter>
             </defs>
 
-            {/* Layer 1: Brighter Outline (Visible when idle) */}
             <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" strokeWidth="0.8"
               className="font-[helvetica] font-bold fill-transparent stroke-neutral-500 text-7xl opacity-60">
               LAKSH
             </text>
             
-            {/* Layer 2: Persistent Blue Glow (Subtle) */}
             <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" strokeWidth="1"
               className="font-[helvetica] font-bold fill-transparent stroke-sky-500 text-7xl opacity-20 animate-pulse"
               filter="url(#glow)">
               LAKSH
             </text>
 
-            {/* Layer 3: Revealed Gradient Text (Masked) */}
             <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" strokeWidth="1"
               className="font-[helvetica] font-bold fill-transparent stroke-[url(#textGradient)] text-7xl"
               mask="url(#textMask)"
