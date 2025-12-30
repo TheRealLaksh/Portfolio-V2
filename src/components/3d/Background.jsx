@@ -18,9 +18,13 @@ const StarLayer = ({ count, size, color, opacity, transparent = true }) => {
   }, [count]);
 
   return (
-    <points ref={mesh}>
+    <points ref={mesh} frustumCulled={false}>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={count} array={particles} itemSize={3} />
+        {/* FIX: Use args to pass array and itemSize to the constructor */}
+        <bufferAttribute 
+          attach="attributes-position" 
+          args={[particles, 3]} 
+        />
       </bufferGeometry>
       <pointsMaterial 
         size={size} 
@@ -83,6 +87,7 @@ const Background = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // NOTE: If the background is black, check if you have "Reduce Motion" enabled in your OS settings.
   if (!shouldRender) return <div className="fixed inset-0 -z-10 bg-black" />;
 
   return (
