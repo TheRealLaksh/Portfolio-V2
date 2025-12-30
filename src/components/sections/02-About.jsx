@@ -110,12 +110,15 @@ const About = () => {
                 className="relative w-full max-w-[400px] aspect-[4/5] rounded-2xl overflow-hidden group"
                 style={{ transformStyle: 'preserve-3d', willChange: 'transform' }} 
             >
-                {/* Image */}
+                {/* FIX: Optimized Image for Core Web Vitals (CLS Prevention) */}
                 <img 
                   src={profileImg} 
-                  alt="Laksh Pradhwani"
+                  alt="Laksh Pradhwani - Full Stack Developer"
+                  loading="lazy"
+                  width="400"
+                  height="500"
                   onClick={triggerHaptic}
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 brightness-75 group-hover:brightness-100"
+                  className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700 brightness-75 group-hover:brightness-100"
                 />
 
                 {/* Holographic Overlay Effects */}

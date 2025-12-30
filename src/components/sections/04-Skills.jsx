@@ -6,30 +6,36 @@ import { Parallax } from '../ui/Parallax';
 import { skillsData } from '../../data/skillsData'; 
 import { triggerHaptic } from '../../utils/triggerHaptic';
 
+// OPTIMIZATION: Move static helper outside component to prevent re-creation
+const getGlowClass = (skillName) => {
+  const map = {
+    "Python": "glow-python",
+    "Django": "glow-django",
+    "JavaScript": "glow-js",
+    "HTML5": "glow-html",
+    "CSS3": "glow-css",
+    "Firebase": "glow-firebase",
+    "Kali Linux": "glow-kali",
+    "Cybersecurity": "glow-security",
+    "Gen AI": "glow-ai",
+    "Databases": "glow-db",
+    "Git": "glow-git",
+    "GitHub": "glow-github"
+  };
+  return map[skillName] || "group-hover:border-white/50 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]";
+};
+
 const Skills = () => {
-  // FIX: Map skill names to the static CSS classes defined in index.css
-  const getGlowClass = (skillName) => {
-    const map = {
-      "Python": "glow-python",
-      "Django": "glow-django",
-      "JavaScript": "glow-js",
-      "HTML5": "glow-html",
-      "CSS3": "glow-css",
-      "Firebase": "glow-firebase",
-      "Kali Linux": "glow-kali",
-      "Cybersecurity": "glow-security",
-      "Gen AI": "glow-ai",
-      "Databases": "glow-db",
-      "Git": "glow-git",
-      "GitHub": "glow-github"
-    };
-    return map[skillName] || "group-hover:border-white/50 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]";
+  const handleKeyDown = (e, callback) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      callback();
+    }
   };
 
   return (
     <section id="skills" className="my-20 md:my-32 relative z-10 overflow-hidden w-full">
       
-      {/* Background Number - Aligned Left-4 */}
       <div className="absolute inset-0 pointer-events-none z-0">
          <Parallax speed={-0.2} className="absolute top-[5%] left-4 text-slate-800/50 text-6xl font-bold font-mono opacity-20">04</Parallax>
       </div>
@@ -49,12 +55,10 @@ const Skills = () => {
           </Reveal>
         </div>
 
-        {/* Grid: 2 cols on mobile, 3 on tablet, 4 on desktop */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-10">
           
           {skillsData.map((skill, index) => (
              <Reveal key={index} delay={index * 0.05}>
-                {/* Enabled Gyroscope for mobile tilt effect */}
                 <Tilt 
                     tiltMaxAngleX={15} 
                     tiltMaxAngleY={15} 
@@ -64,10 +68,13 @@ const Skills = () => {
                     className="h-full"
                 >
                     <div 
+                        // ACCESSIBILITY FIX: Make div interactive
+                        role="button"
+                        tabIndex={0}
                         onClick={triggerHaptic}
-                        className="skill-card-glass group rounded-2xl md:rounded-3xl p-4 md:p-8 flex flex-col items-center justify-center gap-3 md:gap-6 relative overflow-hidden h-full aspect-[4/3] border border-white/5 bg-slate-900/60 backdrop-blur-md hover:bg-slate-800/80 transition-all duration-300 active:scale-95"
+                        onKeyDown={(e) => handleKeyDown(e, triggerHaptic)}
+                        className="skill-card-glass group rounded-2xl md:rounded-3xl p-4 md:p-8 flex flex-col items-center justify-center gap-3 md:gap-6 relative overflow-hidden h-full aspect-[4/3] border border-white/5 bg-slate-900/60 backdrop-blur-md hover:bg-slate-800/80 transition-all duration-300 active:scale-95 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-black"
                     >
-                        {/* FIX: Applied static class from helper instead of dynamic template literal */}
                         <div className={`absolute inset-0 rounded-3xl border-2 border-transparent transition-all duration-300 ${getGlowClass(skill.name)}`}></div>
                         
                         <div className="text-4xl md:text-6xl relative z-10 transition-transform duration-300 group-hover:scale-110" style={{ color: skill.color }}>
