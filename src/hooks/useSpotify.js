@@ -1,59 +1,47 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const API_URL = '/api/spotify';
+// FIX: Use Environment Variables for sensitive data
+// Fallbacks provided for dev, but recommend using .env
+const LASTFM_USERNAME = import.meta.env.VITE_LASTFM_USERNAME || 'lakshp';
+const LASTFM_API_KEY = import.meta.env.VITE_LASTFM_API_KEY || '0b1d51f7f741582cd0895125d1da45c3';
+
+// Construct URL dynamically
+const API_URL = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=1`;
 
 const useSpotify = () => {
   const [song, setSong] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true; 
-
     const fetchSong = async () => {
       try {
-        // PERF FIX: Use native fetch instead of axios
-        const res = await fetch(API_URL);
-        
-        if (!res.ok) throw new Error('Failed to fetch');
-        
-        const data = await res.json();
-        if (!isMounted) return;
-
-        const track = data.recenttracks?.track?.[0];
+        const { data } = await axios.get(API_URL);
+        const track = data.recenttracks.track[0];
 
         if (track) {
           setSong({
             name: track.name,
             artist: track.artist['#text'],
             album: track.album['#text'],
-            // Fix: Safe access to image array
-            image: (track.image && track.image.length > 2) ? track.image[2]['#text'] : null, 
+            // Check if image exists before accessing index
+            image: track.image[2] ? track.image[2]['#text'] : null, 
             isPlaying: track['@attr']?.nowplaying === 'true',
             url: track.url
           });
         }
       } catch (error) {
-        if (isMounted) console.error("Error fetching Music data:", error);
+        console.error("Error fetching Last.fm data:", error);
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     };
 
-    
     fetchSong();
     
-  
-    const interval = setInterval(() => {
-   
-        if (!document.hidden && isMounted) {
-            fetchSong();
-        }
-    }, 30000); 
-
-    return () => {
-        isMounted = false;
-        clearInterval(interval);
-    };
+    // Poll every 10 seconds to check for song changes
+    const interval = setInterval(fetchSong, 10000); 
+    return () => clearInterval(interval);
   }, []);
 
   return { song, loading };
