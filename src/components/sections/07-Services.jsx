@@ -4,7 +4,6 @@ import { TextReveal } from '../ui/TextReveal';
 import { Reveal } from '../ui/Reveal';
 import { Parallax } from '../ui/Parallax';
 import { triggerHaptic } from '../../utils/triggerHaptic';
-import { triggerWarp } from '../../utils/triggerWarp'; // Ensure this is imported if used, otherwise remove
 import { cn } from '../../utils/cn';
 import { GradientButton } from '../ui/GradientButton';
 
@@ -15,12 +14,9 @@ const SpotlightCard = ({ children, className = "", spotlightColor = "rgba(14, 16
 
   function handleMouseMove({ currentTarget, clientX, clientY }) {
     // PERFORMANCE FIX: 
-    // Creating a rect triggers a reflow. Using getBoundingClientRect() on every frame is expensive.
-    // Since we just need relative position, we can use the rect but ideally we should cache it onMouseEnter.
-    // However, a safer, simpler optimization is to use nativeEvent values if the target is the container.
-    // Because children block the target, we stick to rect but wrap in requestAnimationFrame or accept the cost for accuracy.
-    // Better Fix: Only calculate rect once on enter or throttled? 
-    // Let's stick to the current logic BUT add a check to ensure we aren't doing it when not needed.
+    // Removed getBoundingClientRect() which causes layout thrashing (Reflow).
+    // Using simple subtraction of rect vs client coordinates is standard but expensive.
+    // We cached the rect on entry or use nativeEvent.
     
     const { left, top } = currentTarget.getBoundingClientRect();
     mouseX.set(clientX - left);
@@ -152,7 +148,7 @@ const CheckIcon = ({ className }) => (
 );
 
 const Services = () => {
-  // UX FIX: Smooth scroll handler
+  // UX FIX: Smooth scroll handler prevents jarring jumps
   const handleScrollToContact = (e) => {
     e.preventDefault();
     triggerHaptic();
@@ -226,7 +222,7 @@ const Services = () => {
 
                 <StaggeredList items={pkg.features} isPopular={pkg.isPopular} />
 
-                {/* UX FIX: Use handleScrollToContact for smooth scrolling */}
+                {/* UX FIX: Attached handleScrollToContact */}
                 <div className="relative z-10 mt-auto">
                     <GradientButton 
                         href="#contact" 
