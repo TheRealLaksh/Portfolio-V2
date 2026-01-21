@@ -27,7 +27,7 @@ const Contact = () => {
   const borderColor = useTransform(
     scrollYProgress, 
     [0, 1], 
-    ["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.6)"]
+    ["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.2)"]
   );
 
   const handleSubmit = async (e) => {
@@ -93,7 +93,7 @@ const Contact = () => {
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
             <Reveal delay={0.1}>
-               <div className="bg-slate-900/50 backdrop-blur-md border border-slate-800 p-8 rounded-2xl shadow-lg">
+               <div className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-2xl shadow-lg hover:border-white/20 transition-colors">
                   <h3 className="text-2xl font-bold text-white mb-4">Get in Touch</h3>
                   <p className="text-slate-400 leading-relaxed mb-6">
                     I'm currently open to freelance projects and internship opportunities. Have an idea?
@@ -101,14 +101,18 @@ const Contact = () => {
                   </p>
                   <div className="space-y-4">
                      <div className="flex items-center gap-4 text-slate-300">
-                        <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-sky-400 shrink-0"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>
+                        <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-sky-400 shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        </div>
                         <div>
                            <div className="text-xs text-slate-500 uppercase tracking-wider font-bold">Email</div>
                            <a href="mailto:contact@lakshp.live" className="hover:text-sky-400 transition-colors">contact@lakshp.live</a>
                         </div>
                      </div>
                      <div className="flex items-center gap-4 text-slate-300">
-                        <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-purple-400 shrink-0"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
+                        <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-purple-400 shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        </div>
                         <div>
                            <div className="text-xs text-slate-500 uppercase tracking-wider font-bold">Location</div>
                            <span>Varanasi, India</span>
@@ -127,35 +131,68 @@ const Contact = () => {
                     backgroundColor: bgGlow,
                     borderColor: borderColor
                 }}
-                className="backdrop-blur-md border border-slate-800 p-8 rounded-2xl shadow-xl relative group overflow-hidden h-full transition-colors duration-500"
+                className="backdrop-blur-md border border-white/10 p-8 rounded-2xl shadow-xl relative group overflow-hidden h-full transition-colors duration-500"
             >
                 <form onSubmit={handleSubmit}>
                     <div className="absolute -top-20 -right-20 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl group-hover:bg-sky-500/20 transition-all duration-700"></div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6 relative z-10">
                         <div className="space-y-2">
-                        <label htmlFor="name" className="text-sm text-slate-400 font-medium ml-1">Name</label>
-                        <input id="name" autoComplete="name" type="text" name="name" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-600" placeholder="Your Name" required />
+                            <label htmlFor="name" className="text-sm text-slate-400 font-medium ml-1">Name</label>
+                            <input 
+                                id="name" 
+                                autoComplete="name" 
+                                type="text" 
+                                name="name" 
+                                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500/50 focus:bg-white/5 focus:ring-1 focus:ring-sky-500/50 transition-all placeholder:text-slate-600" 
+                                placeholder="Your Name" 
+                                required 
+                            />
                         </div>
                         <div className="space-y-2">
-                        <label htmlFor="email" className="text-sm text-slate-400 font-medium ml-1">Email</label>
-                        <input id="email" autoComplete="email" type="email" name="email" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-600" placeholder="your@email.com" required />
+                            <label htmlFor="email" className="text-sm text-slate-400 font-medium ml-1">Email</label>
+                            <input 
+                                id="email" 
+                                autoComplete="email" 
+                                type="email" 
+                                name="email" 
+                                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500/50 focus:bg-white/5 focus:ring-1 focus:ring-sky-500/50 transition-all placeholder:text-slate-600" 
+                                placeholder="your@email.com" 
+                                required 
+                            />
                         </div>
                     </div>
 
                     <div className="space-y-2 mb-6 relative z-10">
                         <label htmlFor="subject" className="text-sm text-slate-400 font-medium ml-1">Subject</label>
-                        <select id="subject" name="subject" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all">
-                        <option value="Project Proposal">Project Proposal</option>
-                        <option value="Internship Offer">Internship Offer</option>
-                        <option value="Freelance Work">Freelance Work</option>
-                        <option value="Just saying hi">Just saying hi!</option>
-                        </select>
+                        <div className="relative">
+                            <select 
+                                id="subject" 
+                                name="subject" 
+                                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500/50 focus:bg-white/5 focus:ring-1 focus:ring-sky-500/50 transition-all appearance-none"
+                            >
+                                <option value="Project Proposal" className="bg-slate-900 text-slate-200">Project Proposal</option>
+                                <option value="Internship Offer" className="bg-slate-900 text-slate-200">Internship Offer</option>
+                                <option value="Freelance Work" className="bg-slate-900 text-slate-200">Freelance Work</option>
+                                <option value="Just saying hi" className="bg-slate-900 text-slate-200">Just saying hi!</option>
+                            </select>
+                            {/* Custom Arrow Icon for Select */}
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="space-y-2 mb-8 relative z-10">
                         <label htmlFor="message" className="text-sm text-slate-400 font-medium ml-1">Message</label>
-                        <textarea id="message" name="message" rows="5" className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all placeholder:text-slate-600" placeholder="Tell me about your project..." required></textarea>
+                        <textarea 
+                            id="message" 
+                            name="message" 
+                            rows="5" 
+                            className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-500/50 focus:bg-white/5 focus:ring-1 focus:ring-sky-500/50 transition-all placeholder:text-slate-600 resize-none" 
+                            placeholder="Tell me about your project..." 
+                            required
+                        ></textarea>
                     </div>
 
                     <button 
