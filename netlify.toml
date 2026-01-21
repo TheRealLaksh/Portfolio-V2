@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/resume"
+  to = "https://profiley.lakshp.live/laksh"
+  status = 301
+  force = true
