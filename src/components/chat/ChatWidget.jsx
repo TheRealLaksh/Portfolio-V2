@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   FiMessageSquare, FiX, FiSend, FiBriefcase,
   FiFileText, FiMail, FiMinimize2, FiMaximize2, FiPackage
-} from 'react-icons/fi'; // Added FiPackage
+} from 'react-icons/fi';
 import { cn } from '../../utils/cn';
 import { triggerHaptic } from '../../utils/triggerHaptic';
 import resumeFile from '../../assets/resume/laksh.pradhwani.resume.pdf';
@@ -148,20 +148,27 @@ const ChatWidget = () => {
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed bottom-[85px] right-6 z-50 cursor-pointer hidden md:block"
+            className={cn(
+                // Mobile: Top Right, Small
+                "fixed z-50 cursor-pointer top-[60px] right-3 w-[200px]",
+                // Desktop: Bottom Right, Normal
+                "md:bottom-[85px] md:right-6 md:top-auto md:w-auto md:max-w-[280px]"
+            )}
             onClick={() => setIsOpen(true)}
-
             role="button"
             tabIndex={0}
             onKeyDown={(e) => { if (e.key === 'Enter') setIsOpen(true); }}
           >
-            <div className="relative bg-slate-900/90 backdrop-blur-xl text-white px-6 py-4 rounded-2xl border border-sky-500/30 shadow-[0_0_30px_-10px_rgba(14,165,233,0.4)] max-w-[280px]">
+            <div className={cn(
+                "relative bg-slate-900/90 backdrop-blur-xl text-white rounded-2xl border border-sky-500/30 shadow-[0_0_30px_-10px_rgba(14,165,233,0.4)]",
+                "p-3 md:px-6 md:py-4" // Smaller padding on mobile
+            )}>
               <button onClick={(e) => { e.stopPropagation(); setShowNotification(false); }} className="absolute -top-2 -left-2 bg-slate-800 rounded-full p-1 border border-white/10"><FiX size={12} /></button>
               <div className="flex items-center gap-2 mb-1">
                 <span className="flex h-2.5 w-2.5 relative"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-500"></span></span>
-                <p className="font-bold text-base">Ask AI Laksh!</p>
+                <p className="font-bold text-sm md:text-base">Ask AI Laksh!</p>
               </div>
-              <p className="text-sm text-slate-300">Curious about my work? I can answer questions about my skills & experience instantly.</p>
+              <p className="text-xs md:text-sm text-slate-300">Curious about my work? I can answer questions instantly.</p>
             </div>
           </motion.div>
         )}
@@ -264,11 +271,30 @@ const ChatWidget = () => {
         )}
       </AnimatePresence>
 
-      <button onClick={() => { triggerHaptic(); setIsOpen(!isOpen); }} className="fixed bottom-6 right-6 z-[60] group hidden md:flex items-center justify-end w-12 hover:w-36 h-12 rounded-full overflow-hidden transition-all duration-500 ease-out bg-transparent border border-transparent hover:bg-slate-900 hover:border-slate-700 hover:shadow-2xl hover:shadow-sky-900/20 active:scale-95">
-        <div className="absolute inset-0 w-full h-full bg-sky-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <span className="absolute right-14 opacity-0 group-hover:opacity-100 text-sky-400 font-medium text-sm whitespace-nowrap transition-all duration-500 delay-75">AI Assistant</span>
-        <div className={`relative w-12 h-12 flex items-center justify-center shrink-0 z-10 transition-colors duration-300 ${isOpen ? 'text-white' : 'text-slate-400 group-hover:text-sky-400'}`}>
-          {isOpen ? <FiX size={24} /> : <FiMessageSquare size={24} />}
+      <button 
+        onClick={() => { triggerHaptic(); setIsOpen(!isOpen); }} 
+        className={cn(
+            "fixed z-[60] group flex items-center justify-center transition-all duration-500 ease-out rounded-full",
+            // Mobile Styles: Top Right, Small, no text expansion
+            "top-3 right-3 w-10 h-10 bg-slate-900/80 border border-white/10 backdrop-blur-md shadow-lg",
+            // Desktop Styles: Bottom Right, Large, text expansion on hover
+            "md:bottom-6 md:right-6 md:top-auto md:w-12 md:hover:w-36 md:h-12 md:justify-end md:bg-transparent md:border-transparent md:hover:bg-slate-900 md:hover:border-slate-700 md:hover:shadow-2xl hover:shadow-sky-900/20 active:scale-95"
+        )}
+      >
+        {/* Hover Effect Background (Desktop only) */}
+        <div className="hidden md:block absolute inset-0 w-full h-full bg-sky-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        
+        {/* Text Label (Desktop only) */}
+        <span className="hidden md:block absolute right-14 opacity-0 group-hover:opacity-100 text-sky-400 font-medium text-sm whitespace-nowrap transition-all duration-500 delay-75">AI Assistant</span>
+        
+        {/* Icon */}
+        <div className={cn(
+            "relative flex items-center justify-center shrink-0 z-10 transition-colors duration-300",
+            isOpen ? 'text-white' : 'text-sky-400 md:text-slate-400 md:group-hover:text-sky-400',
+            // Sizing for mobile vs desktop
+            "w-10 h-10 md:w-12 md:h-12"
+        )}>
+          {isOpen ? <FiX size={20} className="md:w-6 md:h-6" /> : <FiMessageSquare size={20} className="md:w-6 md:h-6" />}
         </div>
       </button>
     </>

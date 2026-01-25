@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FiHome, FiUser, FiBriefcase, FiCpu, FiCode, FiFileText, FiMail, FiDownload, FiMessageSquare, FiPackage } from 'react-icons/fi';
+import { FiHome, FiUser, FiBriefcase, FiCpu, FiCode, FiFileText, FiMail, FiDownload, FiPackage } from 'react-icons/fi';
 import useScrollSpy from '../../hooks/useScrollSpy';
 import { cn } from '../../utils/cn';
 import { triggerWarp } from '../../utils/triggerWarp';
@@ -53,11 +53,6 @@ const MobileNavbar = () => {
         }
       });
     }
-  };
-
-  const openChat = () => {
-    triggerHaptic();
-    window.dispatchEvent(new Event('toggle-chat'));
   };
 
   const scrollToSection = (e, id) => {
@@ -125,13 +120,6 @@ const MobileNavbar = () => {
       <a href="#contact" onClick={(e) => scrollToSection(e, 'contact')} className={getLinkClass('contact')}>
         <FiMail className="w-4 h-4" />
       </a>
-
-      <button 
-        onClick={openChat} 
-        className="relative flex items-center justify-center rounded-full px-3 py-2 text-sky-400 bg-sky-500/10 border border-sky-500/30 active:scale-95 transition-all"
-      >
-        <FiMessageSquare className="w-4 h-4" />
-      </button>
 
       {deferredPrompt && (
         <button onClick={handleInstallClick} className="relative flex items-center rounded-full px-3 py-2 text-green-400 bg-green-500/10 border border-green-500/30 active:scale-95 transition-all">
