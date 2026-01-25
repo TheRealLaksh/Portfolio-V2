@@ -21,7 +21,8 @@ const Layout = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-background text-slate-300">
+    // FIX: Changed overflow-hidden to overflow-x-hidden to prevent vertical scroll locking
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-background text-slate-300">
       <AnimatePresence mode="wait">
         {loading && <Preloader onComplete={() => setLoading(false)} />}
       </AnimatePresence>

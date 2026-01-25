@@ -19,6 +19,8 @@ html {
   /* FIX: Strict overflow control for mobile stability */
   width: 100%;
   overflow-x: hidden;
+  /* Ensure vertical scroll is allowed */
+  overflow-y: auto;
   
   -webkit-tap-highlight-color: transparent;
 }
@@ -27,10 +29,15 @@ body {
   @apply bg-background text-slate-300 antialiased selection:bg-sky-500/30 selection:text-sky-200;
   padding-bottom: var(--sab);
   
-  /* FIX: Prevents mobile pull-to-refresh interacting poorly with custom scroll (Lenis) */
-  overscroll-behavior-y: none;
+  /* FIX: Removed overscroll-behavior-y: none as it causes scroll locking on some mobile browsers */
+  /* overscroll-behavior-y: none; */ 
+  
+  /* Explicitly allow vertical scrolling and panning */
+  touch-action: pan-y;
+  overflow-y: auto;
   overflow-x: hidden;
   width: 100%;
+  min-height: 100vh;
 }
 
 /* Custom Scrollbar */
