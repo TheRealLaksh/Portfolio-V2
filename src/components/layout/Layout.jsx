@@ -2,9 +2,9 @@ import React, { useState, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Preloader from '../ui/Preloader';
 import Navbar from './Navbar';
+import MobileNavbar from './MobileNavbar';
 import SocialSidebar from './SocialSidebar';
 import Footer from './Footer';
-// REMOVED: import Spotlight from '../ui/Spotlight'; (No longer needed)
 
 // LAZY LOAD HEAVY COMPONENTS
 const Background = React.lazy(() => import('../3d/Background'));
@@ -33,20 +33,20 @@ const Layout = ({ children }) => {
             animate={{ opacity: 1 }}
             transition={{ duration: 2, ease: "easeOut" }}
          >
-            {/* FIX: Added proper fallback for 3D Background */}
             <Suspense fallback={<div className="absolute inset-0 bg-black/90 flex items-center justify-center"><LoadingSpinner /></div>}>
                <Background />
             </Suspense>
-            
-            {/* REMOVED: Spotlight & Grain for "Clear Black" look */}
-            {/* <Spotlight /> */}
-            {/* <div className="bg-grain"></div> */}
          </motion.div>
       )}
 
       {!loading && (
         <>
+          {/* Render Desktop Navigation */}
           <Navbar />
+          
+          {/* Render Mobile Navigation */}
+          <MobileNavbar />
+
           <SocialSidebar />
           
           <motion.main 
@@ -60,7 +60,6 @@ const Layout = ({ children }) => {
 
           <Footer />
           
-          {/* FIX: Added fallback for ChatWidget */}
           <Suspense fallback={<div className="fixed bottom-6 right-6 z-50"><LoadingSpinner /></div>}>
             <ChatWidget />
           </Suspense>
