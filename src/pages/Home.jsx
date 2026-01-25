@@ -16,14 +16,20 @@ const Home = () => {
   const location = useLocation();
   const lenis = useLenis();
 
-  // Handle scrolling to sections if redirected from /booking (e.g., clicking "Contact" while on the booking page)
+  // Handle scrolling to sections if redirected or on load
   useEffect(() => {
-    if (location.hash && lenis) {
-      const targetId = location.hash;
-      // Small timeout to ensure DOM is ready
-      setTimeout(() => {
-        lenis.scrollTo(targetId, { offset: -30 });
-      }, 100);
+    if (lenis) {
+      if (location.hash) {
+        // If there is a hash (e.g. #contact), scroll there
+        const targetId = location.hash;
+        setTimeout(() => {
+          lenis.scrollTo(targetId, { offset: -30 });
+        }, 100);
+      } else {
+        // FIX: If NO hash, force scroll to top immediately to prevent "Services" jump
+        lenis.scrollTo(0, { immediate: true });
+        window.scrollTo(0, 0);
+      }
     }
   }, [location, lenis]);
 

@@ -12,6 +12,14 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
+    // FIX: PREVENT BROWSER FROM RESTORING SCROLL POSITION
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    
+    // Force immediate scroll to top
+    window.scrollTo(0, 0);
+
     AOS.init({
       duration: 800,
       easing: 'ease-out-cubic',
@@ -23,7 +31,11 @@ function App() {
   useEffect(() => {
     // Scroll to top on route change
     window.scrollTo(0, 0);
-    AOS.refresh(); 
+    
+    // Fix for AOS not refreshing immediately after route change
+    setTimeout(() => {
+      AOS.refresh();
+    }, 100);
   }, [location]);
 
   const lenisOptions = {
