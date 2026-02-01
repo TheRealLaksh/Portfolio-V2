@@ -32,7 +32,7 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         // Adding ?v=2 forces the browser to check for updates to the SW file
-        navigator.serviceWorker.register('/sw.js?v=2')
+        navigator.serviceWorker.register('/sw.js?v=3')
           .then(reg => {
             console.log('SW Registered');
 
