@@ -20,6 +20,7 @@ React, Vite, Tailwind, Framer Motion, React Three Fiber, Lenis, AOS, react-route
 - `src/components/layout/`: `Footer.jsx`, `SocialSidebar.jsx`
 - `src/components/chat/`: chat UI (`ChatCards.jsx`)
 - `public/`: icons, manifest, `sw.js`, `me.webp`
+- `public/signature/lp-logo.png`: 160x160 opaque LP logo used in Laksh's Gmail signature (hosted at https://lakshpradhwani.com/signature/lp-logo.png; do not move or delete or the signature image breaks)
 
 ## Status
 Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resume link) now use lakshpradhwani.com. The contact address is now `work@lakshpradhwani.com` (Cloudflare Email Routing forwards it to Laksh's Gmail). Remaining: the resume PDF. `npm run build` was not run: `node_modules` is not installed in this folder (run `npm ci` first).
@@ -38,6 +39,7 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 - Laksh chose small commits, pushed after each (every push to `main` goes live on Vercel). Session of 8 Oct 2026.
 
 ## Session log (newest first)
+- 2026-10-09: added `public/signature/lp-logo.png` (opaque version of `icon-192.png`) to host the logo for the Gmail signature on the new domain.
 - 2026-10-09: replaced `contact@lakshp.live` with `work@lakshpradhwani.com` in `08-Contact.jsx`, `01-Hero.jsx`, `Footer.jsx`, `SocialSidebar.jsx`, `ChatCards.jsx`. Domain DNS moved to Cloudflare (nameservers george/ruth.ns.cloudflare.com); MX + SPF live; work@ and me@ forward to Gmail.
 - 2026-10-08: replaced lakshp.live with lakshpradhwani.com in `index.html` (og/twitter), `netlify.toml` and `06-Resume.jsx`; emails and resume PDF still pending.
 - 2026-10-08: added HANDOFF.md and the handoff hooks (Stop hook, pre-commit, `scripts/handoff.mjs`).
@@ -45,12 +47,13 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 <!-- handoff:auto:start -->
 ## Auto: repo state
 
-_Refreshed 9 Oct 2026, 12:32 am IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
+_Refreshed 9 Oct 2026, 12:59 am IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
 
 Branch: `main` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 
 ### Last 15 commits
 
+- `2d7b824` 2026-10-09 00:32 Use work@lakshpradhwani.com as the contact address
 - `f536175` 2026-10-08 23:58 Point site URLs at lakshpradhwani.com
 - `b2507a1` 2026-10-08 23:57 Add HANDOFF.md and handoff hooks
 - `8355d36` 2026-05-19 12:59 Update chatbot hook endpoint linkage
@@ -65,16 +68,11 @@ Branch: `main` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 - `66f565d` 2025-12-31 01:43 Delete spotify.js
 - `5512e66` 2025-12-31 01:42 Update useSpotify.js
 - `87727d6` 2025-12-31 01:38 update
-- `a6d1344` 2025-12-31 01:30 SECURITY: Remove .env from version control
 
 ### Uncommitted changes at refresh time
 
 ```
 M  HANDOFF.md
-M  src/components/chat/ChatCards.jsx
-M  src/components/layout/Footer.jsx
-M  src/components/layout/SocialSidebar.jsx
-M  src/components/sections/01-Hero.jsx
-M  src/components/sections/08-Contact.jsx
+A  public/signature/lp-logo.png
 ```
 <!-- handoff:auto:end -->
