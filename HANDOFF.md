@@ -22,16 +22,15 @@ React, Vite, Tailwind, Framer Motion, React Three Fiber, Lenis, AOS, react-route
 - `public/`: icons, manifest, `sw.js`, `me.webp`
 
 ## Status
-Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resume link) now use lakshpradhwani.com. Remaining: the `contact@lakshp.live` address (waiting on email forwarding) and the resume PDF. `npm run build` was not run: `node_modules` is not installed in this folder (run `npm ci` first).
+Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resume link) now use lakshpradhwani.com. The contact address is now `work@lakshpradhwani.com` (Cloudflare Email Routing forwards it to Laksh's Gmail). Remaining: the resume PDF. `npm run build` was not run: `node_modules` is not installed in this folder (run `npm ci` first).
 
 ## Next steps
-1. Replace `contact@lakshp.live` with `work@lakshpradhwani.com` in `01-Hero.jsx`, `08-Contact.jsx`, `Footer.jsx`, `SocialSidebar.jsx`, `ChatCards.jsx`, once forwarding works (otherwise visitors mail a dead address).
-2. Regenerate `src/assets/resume/laksh.pradhwani.resume.pdf`: it contains the link `https://www.lakshp.live/` (export again from Profiley once its default portfolio link is updated).
-3. Add a real `public/og-image.jpg` (see open questions).
+1. Regenerate `src/assets/resume/laksh.pradhwani.resume.pdf`: it contains the link `https://www.lakshp.live/` (export again from Profiley once its default portfolio link is updated).
+2. Add a real `public/og-image.jpg` (see open questions).
 
 ## Open questions / waiting on
 - `og:image` points to `/og-image.jpg` but that file does not exist in `public/` (404 on the live site), so link previews have no image. Needs an image from Laksh.
-- Email forwarding (ImprovMX) for work@ and me@lakshpradhwani.com: Laksh signs up and adds aliases, then Claude adds MX/TXT in Hostinger hPanel.
+- Confirm a real test mail to work@lakshpradhwani.com reaches Gmail (DNS and routing rules verified, no delivery test sent yet).
 
 ## Decisions not to undo
 - Domain is lakshpradhwani.com (Hostinger, bought 8 Oct 2026). Do not reintroduce lakshp.live.
@@ -39,18 +38,20 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 - Laksh chose small commits, pushed after each (every push to `main` goes live on Vercel). Session of 8 Oct 2026.
 
 ## Session log (newest first)
+- 2026-10-09: replaced `contact@lakshp.live` with `work@lakshpradhwani.com` in `08-Contact.jsx`, `01-Hero.jsx`, `Footer.jsx`, `SocialSidebar.jsx`, `ChatCards.jsx`. Domain DNS moved to Cloudflare (nameservers george/ruth.ns.cloudflare.com); MX + SPF live; work@ and me@ forward to Gmail.
 - 2026-10-08: replaced lakshp.live with lakshpradhwani.com in `index.html` (og/twitter), `netlify.toml` and `06-Resume.jsx`; emails and resume PDF still pending.
 - 2026-10-08: added HANDOFF.md and the handoff hooks (Stop hook, pre-commit, `scripts/handoff.mjs`).
 
 <!-- handoff:auto:start -->
 ## Auto: repo state
 
-_Refreshed 8 Oct 2026, 11:58 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
+_Refreshed 9 Oct 2026, 12:32 am IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
 
 Branch: `main` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 
 ### Last 15 commits
 
+- `f536175` 2026-10-08 23:58 Point site URLs at lakshpradhwani.com
 - `b2507a1` 2026-10-08 23:57 Add HANDOFF.md and handoff hooks
 - `8355d36` 2026-05-19 12:59 Update chatbot hook endpoint linkage
 - `76936c9` 2026-02-01 17:41 update
@@ -65,14 +66,15 @@ Branch: `main` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 - `5512e66` 2025-12-31 01:42 Update useSpotify.js
 - `87727d6` 2025-12-31 01:38 update
 - `a6d1344` 2025-12-31 01:30 SECURITY: Remove .env from version control
-- `0ec9bfd` 2025-12-31 01:17 bg fix
 
 ### Uncommitted changes at refresh time
 
 ```
 M  HANDOFF.md
-M  index.html
-M  netlify.toml
-M  src/components/sections/06-Resume.jsx
+M  src/components/chat/ChatCards.jsx
+M  src/components/layout/Footer.jsx
+M  src/components/layout/SocialSidebar.jsx
+M  src/components/sections/01-Hero.jsx
+M  src/components/sections/08-Contact.jsx
 ```
 <!-- handoff:auto:end -->

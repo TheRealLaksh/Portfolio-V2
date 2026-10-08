@@ -66,7 +66,7 @@ const SocialSidebar = () => {
       </a>
 
       {/* Email */}
-      <a href="mailto:contact@lakshp.live" aria-label="Email"
+      <a href="mailto:work@lakshpradhwani.com" aria-label="Email"
         className="group relative flex items-center justify-start w-10 hover:w-28 h-10 rounded-full overflow-hidden transition-all duration-500 ease-out bg-transparent border border-transparent hover:bg-slate-800 hover:border-slate-700 hover:shadow-lg hover:shadow-rose-900/20">
         <div
           className="absolute inset-0 w-full h-full bg-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">

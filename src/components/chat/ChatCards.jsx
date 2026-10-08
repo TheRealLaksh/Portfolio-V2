@@ -36,7 +36,7 @@ export const ContactCard = () => {
   }, []);
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText('contact@lakshp.live');
+    navigator.clipboard.writeText('work@lakshpradhwani.com');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -77,7 +77,7 @@ export const ContactCard = () => {
                     {copied ? <FiCheck size={12} /> : <FiMail size={12} />}
                   </div>
                   <span className="text-xs font-medium text-slate-200">
-                    {copied ? 'Copied to Clipboard!' : 'contact@lakshp.live'}
+                    {copied ? 'Copied to Clipboard!' : 'work@lakshpradhwani.com'}
                   </span>
               </div>
               {!copied && <FiCopy className="text-slate-500 group-hover:text-white transition-colors" size={12} />}

@@ -137,7 +137,7 @@ const Footer = () => {
               <a href="https://linkedin.com/in/laksh-pradhwani" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-blue-400 transition-colors">
                 <FiLinkedin size={22} />
               </a>
-              <a href="mailto:contact@lakshp.live" className="text-slate-400 hover:text-rose-400 transition-colors">
+              <a href="mailto:work@lakshpradhwani.com" className="text-slate-400 hover:text-rose-400 transition-colors">
                 <FiMail size={22} />
               </a>
             </div>
