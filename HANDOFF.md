@@ -22,11 +22,11 @@ React, Vite, Tailwind, Framer Motion, React Three Fiber, Lenis, AOS, react-route
 - `public/`: icons, manifest, `sw.js`, `me.webp`
 
 ## Status
-Migrating off the expired lakshp.live. Done on 8 Oct 2026: see session log. Waiting on the free email forwarding for work@lakshpradhwani.com before the contact address is swapped.
+Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resume link) now use lakshpradhwani.com. Remaining: the `contact@lakshp.live` address (waiting on email forwarding) and the resume PDF. `npm run build` was not run: `node_modules` is not installed in this folder (run `npm ci` first).
 
 ## Next steps
-1. Replace lakshp.live URLs with lakshpradhwani.com (meta tags, `/resume` redirect, resume link). In progress.
-2. Replace `contact@lakshp.live` with `work@lakshpradhwani.com` in `01-Hero.jsx`, `08-Contact.jsx`, `Footer.jsx`, `SocialSidebar.jsx`, `ChatCards.jsx`, once forwarding works (otherwise visitors mail a dead address).
+1. Replace `contact@lakshp.live` with `work@lakshpradhwani.com` in `01-Hero.jsx`, `08-Contact.jsx`, `Footer.jsx`, `SocialSidebar.jsx`, `ChatCards.jsx`, once forwarding works (otherwise visitors mail a dead address).
+2. Regenerate `src/assets/resume/laksh.pradhwani.resume.pdf`: it contains the link `https://www.lakshp.live/` (export again from Profiley once its default portfolio link is updated).
 3. Add a real `public/og-image.jpg` (see open questions).
 
 ## Open questions / waiting on
@@ -39,17 +39,19 @@ Migrating off the expired lakshp.live. Done on 8 Oct 2026: see session log. Wait
 - Laksh chose small commits, pushed after each (every push to `main` goes live on Vercel). Session of 8 Oct 2026.
 
 ## Session log (newest first)
+- 2026-10-08: replaced lakshp.live with lakshpradhwani.com in `index.html` (og/twitter), `netlify.toml` and `06-Resume.jsx`; emails and resume PDF still pending.
 - 2026-10-08: added HANDOFF.md and the handoff hooks (Stop hook, pre-commit, `scripts/handoff.mjs`).
 
 <!-- handoff:auto:start -->
 ## Auto: repo state
 
-_Refreshed 8 Oct 2026, 11:57 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
+_Refreshed 8 Oct 2026, 11:58 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
 
 Branch: `main` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 
 ### Last 15 commits
 
+- `b2507a1` 2026-10-08 23:57 Add HANDOFF.md and handoff hooks
 - `8355d36` 2026-05-19 12:59 Update chatbot hook endpoint linkage
 - `76936c9` 2026-02-01 17:41 update
 - `45e3901` 2026-01-25 07:46 fixes
@@ -64,15 +66,13 @@ Branch: `main` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 - `87727d6` 2025-12-31 01:38 update
 - `a6d1344` 2025-12-31 01:30 SECURITY: Remove .env from version control
 - `0ec9bfd` 2025-12-31 01:17 bg fix
-- `88d4d4c` 2025-12-31 01:10 Update Background.jsx
 
 ### Uncommitted changes at refresh time
 
 ```
-A  .claude/settings.json
-A  .githooks/pre-commit
-A  CLAUDE.md
-A  HANDOFF.md
-A  scripts/handoff.mjs
+M  HANDOFF.md
+M  index.html
+M  netlify.toml
+M  src/components/sections/06-Resume.jsx
 ```
 <!-- handoff:auto:end -->

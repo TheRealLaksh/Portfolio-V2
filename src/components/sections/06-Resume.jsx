@@ -39,7 +39,7 @@ const Resume = () => {
         <Reveal delay={0.4}>
           <div className="flex justify-center relative z-20">
             <a
-              href="https://profiley.lakshp.live/laksh"
+              href="https://profiley.lakshpradhwani.com/laksh"
               target="_blank"
               rel="noopener noreferrer"
               onClick={triggerHaptic}
