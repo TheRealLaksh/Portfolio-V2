@@ -7,8 +7,7 @@ const REPO_NAMES = [
   'stranger-things',
   'Profiley-Resume-Builder',
   'Callender-Events',
-  'Portfolio-V1', 
-  'Shopping-demo'
+  'Portfolio-V1'
 ];
 
 const CACHE_KEY = 'github_repos_data';

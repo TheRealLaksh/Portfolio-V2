@@ -38,6 +38,7 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 - Laksh chose small commits, pushed after each (every push to `main` goes live on Vercel). Session of 8 Oct 2026.
 
 ## Session log (newest first)
+- 2026-10-09: removed `Shopping-demo` from `REPO_NAMES` in `src/hooks/useGitHub.js` (the repo is now private, so the GitHub API would 404 for it).
 - 2026-10-09: replaced `public/og-image.jpg` with a hero crop captured while the headline reads "a Web Developer" (the first version showed "a Passionate Learner").
 - 2026-10-09: added `public/signature/icon-{linkedin,github,instagram}.png` for the new Gmail signature (logo removed from the signature at Laksh's request).
 - 2026-10-09: added `public/og-image.jpg` (1200x630 crop of the live hero); `index.html` already pointed at it, so link previews (LinkedIn, WhatsApp, X) now have an image instead of a 404.
@@ -49,12 +50,13 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 <!-- handoff:auto:start -->
 ## Auto: repo state
 
-_Refreshed 9 Oct 2026, 1:15 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
+_Refreshed 9 Oct 2026, 1:40 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
 
 Branch: `main` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 
 ### Last 15 commits
 
+- `afa14ab` 2026-10-09 13:15 Use the Web Developer hero frame for og-image
 - `21ba901` 2026-10-09 13:04 Add social icons for the email signature
 - `8966bdf` 2026-10-09 01:07 Add the missing og-image for link previews
 - `4c1deb1` 2026-10-09 00:59 Host the LP logo for the email signature
@@ -69,12 +71,11 @@ Branch: `main` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 - `32713d4` 2026-01-25 07:21 mobile layout fix
 - `463e602` 2026-01-21 09:00 Update 08-Contact.jsx
 - `4f5d709` 2026-01-21 08:40 redirect
-- `b5dc396` 2026-01-17 13:15 Create me.webp
 
 ### Uncommitted changes at refresh time
 
 ```
 M  HANDOFF.md
-M  public/og-image.jpg
+M  src/hooks/useGitHub.js
 ```
 <!-- handoff:auto:end -->
