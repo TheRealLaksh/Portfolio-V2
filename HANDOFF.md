@@ -38,6 +38,7 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 - Laksh chose small commits, pushed after each (every push to `main` goes live on Vercel). Session of 8 Oct 2026.
 
 ## Session log (newest first)
+- 2026-10-09: replaced `public/og-image.jpg` with a hero crop captured while the headline reads "a Web Developer" (the first version showed "a Passionate Learner").
 - 2026-10-09: added `public/signature/icon-{linkedin,github,instagram}.png` for the new Gmail signature (logo removed from the signature at Laksh's request).
 - 2026-10-09: added `public/og-image.jpg` (1200x630 crop of the live hero); `index.html` already pointed at it, so link previews (LinkedIn, WhatsApp, X) now have an image instead of a 404.
 - 2026-10-09: added `public/signature/lp-logo.png` (opaque version of `icon-192.png`) to host the logo for the Gmail signature on the new domain.
@@ -48,12 +49,13 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 <!-- handoff:auto:start -->
 ## Auto: repo state
 
-_Refreshed 9 Oct 2026, 1:04 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
+_Refreshed 9 Oct 2026, 1:15 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
 
 Branch: `main` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 
 ### Last 15 commits
 
+- `21ba901` 2026-10-09 13:04 Add social icons for the email signature
 - `8966bdf` 2026-10-09 01:07 Add the missing og-image for link previews
 - `4c1deb1` 2026-10-09 00:59 Host the LP logo for the email signature
 - `2d7b824` 2026-10-09 00:32 Use work@lakshpradhwani.com as the contact address
@@ -68,14 +70,11 @@ Branch: `main` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 - `463e602` 2026-01-21 09:00 Update 08-Contact.jsx
 - `4f5d709` 2026-01-21 08:40 redirect
 - `b5dc396` 2026-01-17 13:15 Create me.webp
-- `66f565d` 2025-12-31 01:43 Delete spotify.js
 
 ### Uncommitted changes at refresh time
 
 ```
 M  HANDOFF.md
-A  public/signature/icon-github.png
-A  public/signature/icon-instagram.png
-A  public/signature/icon-linkedin.png
+M  public/og-image.jpg
 ```
 <!-- handoff:auto:end -->
