@@ -20,7 +20,7 @@ React, Vite, Tailwind, Framer Motion, React Three Fiber, Lenis, AOS, react-route
 - `src/components/layout/`: `Footer.jsx`, `SocialSidebar.jsx`
 - `src/components/chat/`: chat UI (`ChatCards.jsx`)
 - `public/`: icons, manifest, `sw.js`, `me.webp`
-- `public/signature/lp-logo.png`: 160x160 opaque LP logo used in Laksh's Gmail signature (hosted at https://lakshpradhwani.com/signature/lp-logo.png; do not move or delete or the signature image breaks)
+- `public/signature/`: images used in Laksh's Gmail signatures, hosted at https://lakshpradhwani.com/signature/<file>. `icon-linkedin.png`, `icon-github.png`, `icon-instagram.png` (36x36, white Simple Icons glyph on black circle) are the live signature icons. `lp-logo.png` is no longer in the signature but is kept because older sent emails reference it. Do not move or delete these or the signature images break.
 
 ## Status
 Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resume link) now use lakshpradhwani.com. The contact address is now `work@lakshpradhwani.com` (Cloudflare Email Routing forwards it to Laksh's Gmail). Remaining: the resume PDF. `npm run build` was not run: `node_modules` is not installed in this folder (run `npm ci` first).
@@ -38,6 +38,7 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 - Laksh chose small commits, pushed after each (every push to `main` goes live on Vercel). Session of 8 Oct 2026.
 
 ## Session log (newest first)
+- 2026-10-09: added `public/signature/icon-{linkedin,github,instagram}.png` for the new Gmail signature (logo removed from the signature at Laksh's request).
 - 2026-10-09: added `public/og-image.jpg` (1200x630 crop of the live hero); `index.html` already pointed at it, so link previews (LinkedIn, WhatsApp, X) now have an image instead of a 404.
 - 2026-10-09: added `public/signature/lp-logo.png` (opaque version of `icon-192.png`) to host the logo for the Gmail signature on the new domain.
 - 2026-10-09: replaced `contact@lakshp.live` with `work@lakshpradhwani.com` in `08-Contact.jsx`, `01-Hero.jsx`, `Footer.jsx`, `SocialSidebar.jsx`, `ChatCards.jsx`. Domain DNS moved to Cloudflare (nameservers george/ruth.ns.cloudflare.com); MX + SPF live; work@ and me@ forward to Gmail.
@@ -47,12 +48,13 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 <!-- handoff:auto:start -->
 ## Auto: repo state
 
-_Refreshed 9 Oct 2026, 1:07 am IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
+_Refreshed 9 Oct 2026, 1:04 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
 
 Branch: `main` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 
 ### Last 15 commits
 
+- `8966bdf` 2026-10-09 01:07 Add the missing og-image for link previews
 - `4c1deb1` 2026-10-09 00:59 Host the LP logo for the email signature
 - `2d7b824` 2026-10-09 00:32 Use work@lakshpradhwani.com as the contact address
 - `f536175` 2026-10-08 23:58 Point site URLs at lakshpradhwani.com
@@ -67,12 +69,13 @@ Branch: `main` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 - `4f5d709` 2026-01-21 08:40 redirect
 - `b5dc396` 2026-01-17 13:15 Create me.webp
 - `66f565d` 2025-12-31 01:43 Delete spotify.js
-- `5512e66` 2025-12-31 01:42 Update useSpotify.js
 
 ### Uncommitted changes at refresh time
 
 ```
 M  HANDOFF.md
-A  public/og-image.jpg
+A  public/signature/icon-github.png
+A  public/signature/icon-instagram.png
+A  public/signature/icon-linkedin.png
 ```
 <!-- handoff:auto:end -->
