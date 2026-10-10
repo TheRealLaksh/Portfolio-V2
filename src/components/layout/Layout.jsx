@@ -21,8 +21,9 @@ const Layout = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   return (
-    // FIX: Changed overflow-hidden to overflow-x-hidden to prevent vertical scroll locking
-    <div className="relative min-h-screen w-full overflow-x-hidden bg-background text-slate-300">
+    // overflow-x-clip hides sideways overflow without making this div a scroll container,
+    // so `position: sticky` scenes inside it still pin to the viewport.
+    <div className="relative min-h-screen w-full overflow-x-clip bg-background text-slate-300">
       <AnimatePresence mode="wait">
         {loading && <Preloader onComplete={() => setLoading(false)} />}
       </AnimatePresence>

@@ -45,9 +45,12 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 - Domain is lakshpradhwani.com (Hostinger, bought 8 Oct 2026). Do not reintroduce lakshp.live.
 - Public contact address is `work@lakshpradhwani.com`; `me@` is for personal use.
 - Laksh chose small commits, pushed after each (every push to `main` goes live on Vercel). Session of 8 Oct 2026. Chosen again 10 Oct 2026; redesign commits go to branch `feat/skyline-world` so nothing reaches production until Laksh approves a merge to `main`.
+- Keep `overflow-x: clip` (not `hidden`) on `body` and the Layout wrapper: `hidden` breaks `position: sticky` for every pinned scene.
 - No AI-generated photos or laptop-on-desk hero. No fake stats: only real GitHub data, never the component demo's sample numbers.
 
 ## Session log (newest first)
+- 2026-10-10: `ContributionSkyline` gets a `bare` mode (transparent, no card, fills its container) and the lab page a sticky scroll-scene preview that drives it.
+- 2026-10-10: `src/index.css` body and `Layout.jsx` wrapper use `overflow-x: clip` instead of `hidden` (body also `overflow-y: visible`). `hidden` made them scroll containers, which stopped `position: sticky` pinned scenes from working. Checked no sideways scroll on `/` at 1280 and 375 px.
 - 2026-10-10: `ContributionSkyline.tsx` now takes `progress` (0 to 1) or a `sceneRef.set({ progress })` handle so scroll drives the flat-to-skyline morph; the timer still works when `progress` is undefined. `/lab/skyline` has a scroll slider to test it.
 - 2026-10-10: added real GitHub contribution data (`src/data/contributions.json`), the unlinked `/lab/skyline` page and its route in `src/App.jsx`.
 - 2026-10-10: added `src/components/world/ContributionSkyline.tsx` (unmodified MIT component from 21st.dev) and `THIRD_PARTY_NOTICES.md`; created branch `feat/skyline-world`; installed deps with `npm install --no-package-lock`.
@@ -63,12 +66,13 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 <!-- handoff:auto:start -->
 ## Auto: repo state
 
-_Refreshed 10 Oct 2026, 2:34 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
+_Refreshed 10 Oct 2026, 2:37 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
 
 Branch: `feat/skyline-world` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 
 ### Last 15 commits
 
+- `df2c361` 2026-10-10 14:34 Drive the skyline morph from scroll
 - `649144a` 2026-10-10 14:31 Add real contribution data and an unlinked skyline lab page
 - `4a37ac3` 2026-10-10 14:31 Add the contribution skyline component
 - `5b18fc7` 2026-10-09 13:40 Drop the private Shopping-demo repo from the GitHub project list
@@ -83,13 +87,14 @@ Branch: `feat/skyline-world` · remote: https://github.com/TheRealLaksh/Portfoli
 - `76936c9` 2026-02-01 17:41 update
 - `45e3901` 2026-01-25 07:46 fixes
 - `080e1b9` 2026-01-25 07:38 fix
-- `2b018d6` 2026-01-25 07:25 fixes
 
 ### Uncommitted changes at refresh time
 
 ```
-M  HANDOFF.md
-M  src/components/world/ContributionSkyline.tsx
-M  src/pages/SkylineLab.jsx
+M HANDOFF.md
+M  src/components/layout/Layout.jsx
+ M src/components/world/ContributionSkyline.tsx
+M  src/index.css
+ M src/pages/SkylineLab.jsx
 ```
 <!-- handoff:auto:end -->
