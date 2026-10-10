@@ -267,7 +267,21 @@ export const resolvePalette = (p: PaletteInput | undefined, dark: boolean): stri
 
 type View = "2d" | "3d"
 
+/** Values a scroll scene can change every frame without re-rendering React. */
+export type SkylineScene = {
+  /** 0 → 1 drives the flat → skyline morph directly. `undefined` hands control back to the timer. */
+  progress?: number
+}
+
 export interface ContributionSkylineProps {
+  /**
+   * Scroll-driven morph. 0 is the flat heat map, 1 the full skyline; the bars
+   * rise in their usual wave as it moves. Overrides `view`, the timer and the
+   * "rises when first seen" behaviour. Prefer `sceneRef` for per-frame updates.
+   */
+  progress?: number
+  /** Receives `{ set(values) }` so a scroll handler can drive the scene without re-rendering React. */
+  sceneRef?: React.MutableRefObject<{ set: (values: SkylineScene) => void } | null>
   /** One entry per day, `YYYY-MM-DD`. Repeated dates add up. Omit for a generated sample year. */
   data?: ContributionDay[]
   /** Last day shown. Defaults to the latest date in `data`, or today. */
@@ -448,6 +462,8 @@ function Stat({
 }
 
 export default function ContributionSkyline({
+  progress: progressProp,
+  sceneRef,
   data,
   endDate,
   view: viewProp,
@@ -500,6 +516,8 @@ export default function ContributionSkyline({
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const tipRef = React.useRef<HTMLDivElement>(null)
   const engine = React.useRef<{ kick: () => void; load: () => void; retheme: () => void; tipWidth: (w: number) => void } | null>(null)
+  // Scroll-scene values live in a ref so a scroll handler can change them every frame without a React render.
+  const scene = React.useRef<SkylineScene>({ progress: progressProp })
 
   const plural = unitPlural ?? unit + "s"
   const nf = React.useMemo(() => new Intl.NumberFormat(locale), [locale])
@@ -858,7 +876,11 @@ export default function ContributionSkyline({
       last = now
       let moving = false
 
-      if (t !== target) {
+      const driven = scene.current.progress
+      if (driven != null) {
+        // Scroll owns the morph: follow it exactly, no timer.
+        t = target = clamp01(driven)
+      } else if (t !== target) {
         const step = reduced ? 1 : (dt * 1000) / Math.max(1, cfg.current.duration)
         t = target > t ? Math.min(target, t + step) : Math.max(target, t - step)
         moving = true
@@ -1124,7 +1146,11 @@ export default function ContributionSkyline({
       },
     }
 
+    if (sceneRef) sceneRef.current = { set: (v) => { Object.assign(scene.current, v); kick() } }
+    if (scene.current.progress != null) kick()
+
     return () => {
+      if (sceneRef) sceneRef.current = null
       if (raf) cancelAnimationFrame(raf)
       io?.disconnect()
       ro.disconnect()
@@ -1148,6 +1174,12 @@ export default function ContributionSkyline({
   React.useEffect(() => {
     engine.current?.kick()
   }, [view, legendLevel])
+
+  // Declarative scroll control: a changed `progress` prop feeds the same ref `sceneRef.set` writes to.
+  React.useEffect(() => {
+    scene.current.progress = progressProp
+    engine.current?.kick()
+  }, [progressProp])
 
   React.useEffect(() => {
     engine.current?.load()

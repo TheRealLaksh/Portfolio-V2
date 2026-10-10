@@ -25,12 +25,12 @@ React, Vite, Tailwind, Framer Motion, React Three Fiber, Lenis, AOS, react-route
 ## Status
 **Redesign in progress on branch `feat/skyline-world` (not on `main`, so the live site is unchanged).** Direction (10 Oct 2026): a scroll-driven interactive world, camera never cuts, built around the 3D contribution skyline. The laptop push-in and AI-photo hero ideas were rejected. Chapters: opening, who, ShiftsDeal, Profiley, tools + live GitHub, curated timeline (scroll = time), resume rendered by Profiley's engine, pricing (3 tiers, numbers to update), AI twin + contact. Full plan and decisions are in Claude memory `portfolio-redesign-2026` and the Obsidian note `02 Projects\Personal\Portfolio V2.md` (to be updated). Laksh is sending 3-5 reference sites for the world and camera feel.
 
-Built so far: `src/components/world/ContributionSkyline.tsx` (MIT component by Kedhareswer Naidu from 21st.dev, copied unmodified; licence in `THIRD_PARTY_NOTICES.md`; canvas 2D, no three.js), real GitHub data in `src/data/contributions.json` (365 days, 1,245 contributions, fetched with `gh api graphql` on 10 Oct 2026), and an unlinked lab page at `/lab/skyline` (`src/pages/SkylineLab.jsx`).
+Built so far: `src/components/world/ContributionSkyline.tsx` (MIT component by Kedhareswer Naidu from 21st.dev, adapted: scroll-driven `progress` and `sceneRef` added; licence in `THIRD_PARTY_NOTICES.md`; canvas 2D, no three.js), real GitHub data in `src/data/contributions.json` (365 days, 1,245 contributions, fetched with `gh api graphql` on 10 Oct 2026), and an unlinked lab page at `/lab/skyline` (`src/pages/SkylineLab.jsx`).
 
 Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resume link) now use lakshpradhwani.com. The contact address is now `work@lakshpradhwani.com` (Cloudflare Email Routing forwards it to Laksh's Gmail). Remaining: the resume PDF. `npm run build` passes (10 Oct 2026). `node_modules` is installed with `npm install --no-package-lock`, because `npm ci` fails: `package-lock.json` is out of sync with `package.json` (lock has vite 7 / react-router 7, package.json says vite 5 / react-router 6). Do not rewrite the lock without checking what Vercel installs.
 
 ## Next steps
-1. Adapt the skyline for the film: a scroll-driven `progress` prop (instead of the timer morph), a camera zoom/pan that flies along the weeks, a bare full-bleed mode with a transparent canvas, milestone markers drawn on the skyline, and a custom palette. Then place it as a chapter once the world design is agreed.
+1. Adapt the skyline for the film (scroll-driven `progress` is done): a camera zoom/pan that flies along the weeks, a bare full-bleed mode with a transparent canvas, milestone markers drawn on the skyline, and a custom palette. Then place it as a chapter once the world design is agreed.
 2. Wait for Laksh's reference sites before designing the rest of the world; collect: updated pricing numbers, a curated milestone list, ShiftsDeal permission for screenshots.
 3. Refresh `src/data/contributions.json` automatically (daily GitHub Action) instead of by hand; keep it real data only.
 4. Regenerate `src/assets/resume/laksh.pradhwani.resume.pdf`: it contains the link `https://www.lakshp.live/` (export again from Profiley once its default portfolio link is updated).
@@ -48,6 +48,7 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 - No AI-generated photos or laptop-on-desk hero. No fake stats: only real GitHub data, never the component demo's sample numbers.
 
 ## Session log (newest first)
+- 2026-10-10: `ContributionSkyline.tsx` now takes `progress` (0 to 1) or a `sceneRef.set({ progress })` handle so scroll drives the flat-to-skyline morph; the timer still works when `progress` is undefined. `/lab/skyline` has a scroll slider to test it.
 - 2026-10-10: added real GitHub contribution data (`src/data/contributions.json`), the unlinked `/lab/skyline` page and its route in `src/App.jsx`.
 - 2026-10-10: added `src/components/world/ContributionSkyline.tsx` (unmodified MIT component from 21st.dev) and `THIRD_PARTY_NOTICES.md`; created branch `feat/skyline-world`; installed deps with `npm install --no-package-lock`.
 - 2026-10-09: removed `Shopping-demo` from `REPO_NAMES` in `src/hooks/useGitHub.js` (the repo is now private, so the GitHub API would 404 for it).
@@ -62,12 +63,13 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 <!-- handoff:auto:start -->
 ## Auto: repo state
 
-_Refreshed 10 Oct 2026, 2:31 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
+_Refreshed 10 Oct 2026, 2:34 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
 
 Branch: `feat/skyline-world` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 
 ### Last 15 commits
 
+- `649144a` 2026-10-10 14:31 Add real contribution data and an unlinked skyline lab page
 - `4a37ac3` 2026-10-10 14:31 Add the contribution skyline component
 - `5b18fc7` 2026-10-09 13:40 Drop the private Shopping-demo repo from the GitHub project list
 - `afa14ab` 2026-10-09 13:15 Use the Web Developer hero frame for og-image
@@ -82,13 +84,12 @@ Branch: `feat/skyline-world` · remote: https://github.com/TheRealLaksh/Portfoli
 - `45e3901` 2026-01-25 07:46 fixes
 - `080e1b9` 2026-01-25 07:38 fix
 - `2b018d6` 2026-01-25 07:25 fixes
-- `32713d4` 2026-01-25 07:21 mobile layout fix
 
 ### Uncommitted changes at refresh time
 
 ```
-M  src/App.jsx
-A  src/data/contributions.json
-A  src/pages/SkylineLab.jsx
+M  HANDOFF.md
+M  src/components/world/ContributionSkyline.tsx
+M  src/pages/SkylineLab.jsx
 ```
 <!-- handoff:auto:end -->
