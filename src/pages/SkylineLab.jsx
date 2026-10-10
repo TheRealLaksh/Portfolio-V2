@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ContributionSkyline from '../components/world/ContributionSkyline';
 import contributions from '../data/contributions.json';
 
@@ -8,6 +8,39 @@ const themeVars = {
   '--color-foreground': '#f5f5f5',
   '--color-border': '#262626',
   '--color-muted-foreground': '#a3a3a3',
+};
+
+// Scene preview: a tall scroll track with a sticky full-height stage. Scroll position
+// maps to the morph progress, which is how the real film chapters will work.
+const ScenePreview = () => {
+  const trackRef = useRef(null);
+  const sceneRef = useRef(null);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const el = trackRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const total = r.height - window.innerHeight;
+      const p = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
+      sceneRef.current?.set({ progress: p });
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
+
+  return (
+    <div ref={trackRef} className="relative w-full" style={{ height: '300vh' }}>
+      <div className="sticky top-0 h-screen w-full">
+        <ContributionSkyline bare data={contributions.days} sceneRef={sceneRef} progress={0} />
+      </div>
+    </div>
+  );
 };
 
 const SkylineLab = () => {
@@ -54,6 +87,7 @@ const SkylineLab = () => {
           </button>
         </div>
       </div>
+      <ScenePreview />
     </main>
   );
 };

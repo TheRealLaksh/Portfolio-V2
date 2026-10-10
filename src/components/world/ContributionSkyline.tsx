@@ -280,6 +280,12 @@ export interface ContributionSkylineProps {
    * "rises when first seen" behaviour. Prefer `sceneRef` for per-frame updates.
    */
   progress?: number
+  /**
+   * Scene mode: no card, border, header, stats or legend. The canvas is transparent
+   * and fills its container's height (give the parent a height), so the skyline can
+   * sit directly on the page background. Hover tooltips still work.
+   */
+  bare?: boolean
   /** Receives `{ set(values) }` so a scroll handler can drive the scene without re-rendering React. */
   sceneRef?: React.MutableRefObject<{ set: (values: SkylineScene) => void } | null>
   /** One entry per day, `YYYY-MM-DD`. Repeated dates add up. Omit for a generated sample year. */
@@ -464,6 +470,7 @@ function Stat({
 export default function ContributionSkyline({
   progress: progressProp,
   sceneRef,
+  bare = false,
   data,
   endDate,
   view: viewProp,
@@ -532,8 +539,8 @@ export default function ContributionSkyline({
   }
 
   // Everything the render loop reads, refreshed every render so the loop never closes over stale props.
-  const cfg = React.useRef({ model, duration, heightScale, orbit, palette, legendLevel, onCellClick, target: view === "3d" ? 1 : 0, setActive, setWidth, setTheme, setAnnounce, describe })
-  cfg.current = { model, duration, heightScale, orbit, palette, legendLevel, onCellClick, target: view === "3d" ? 1 : 0, setActive, setWidth, setTheme, setAnnounce, describe }
+  const cfg = React.useRef({ model, duration, heightScale, orbit, palette, legendLevel, onCellClick, bare, target: view === "3d" ? 1 : 0, setActive, setWidth, setTheme, setAnnounce, describe })
+  cfg.current = { model, duration, heightScale, orbit, palette, legendLevel, onCellClick, bare, target: view === "3d" ? 1 : 0, setActive, setWidth, setTheme, setAnnounce, describe }
 
   React.useEffect(() => {
     const root = rootRef.current
@@ -699,6 +706,11 @@ export default function ContributionSkyline({
       const b3 = extent(camera(1), 1, true)
       const natural = ((b3.maxy - b3.miny) / (b3.maxx - b3.minx)) * (W - 40) + 40
       H3 = Math.max(Math.min(natural, W * 0.72, 620), Math.min(natural, 240))
+      if (cfg.current.bare) {
+        // Scene mode: the container sets the height; both views use all of it.
+        const fh = Math.round(stage.clientHeight)
+        if (fh > 0) H2 = H3 = fh
+      }
       Hmax = Math.ceil(Math.max(H2, H3))
       canvas.width = Math.round(W * dpr)
       canvas.height = Math.round(Hmax * dpr)
@@ -714,7 +726,7 @@ export default function ContributionSkyline({
       const e = easeInOutCubic(t)
       const cam = camera(e, yaw, elev)
       const Hc = lerp(H2, H3, e)
-      if (Math.abs(Hc - lastH) > 0.2) {
+      if (!cfg.current.bare && Math.abs(Hc - lastH) > 0.2) {
         stage.style.height = Hc.toFixed(1) + "px"
         lastH = Hc
       }
@@ -1107,7 +1119,7 @@ export default function ContributionSkyline({
     } else enter()
 
     const ro = new ResizeObserver(() => {
-      if (Math.round(stage.clientWidth) !== W) relayout()
+      if (Math.round(stage.clientWidth) !== W || (cfg.current.bare && Math.round(stage.clientHeight) !== Hmax)) relayout()
     })
     ro.observe(stage)
 
@@ -1216,6 +1228,61 @@ export default function ContributionSkyline({
 
   const hints = ["Hover a day for details · arrow keys to explore", "Drag to orbit · double-click to reset"]
   const hint = hints[is3d && orbit ? 1 : 0]
+
+  if (bare) {
+    const cell = active >= 0 ? model.cells[active] : null
+    return (
+      <section ref={rootRef} className={"relative h-full w-full font-sans " + className} style={{ color: "var(--color-foreground, #171717)" }}>
+        <div ref={stageRef} className="relative h-full w-full overflow-hidden">
+          <canvas
+            ref={canvasRef}
+            tabIndex={0}
+            role="img"
+            aria-label={
+              nf.format(stats.total) + " " + noun(stats.total) + " between " + range(stats.first, stats.last, true) +
+              ", shown as a " + (is3d ? "3D skyline" : "heat map") + ". Use the arrow keys to read individual days."
+            }
+            className="absolute top-0 left-0 block outline-none"
+            style={{ maxWidth: "none", touchAction: "pan-y" }}
+          />
+        </div>
+        <div
+          ref={tipRef}
+          role="tooltip"
+          aria-hidden={active < 0}
+          className="pointer-events-none absolute top-0 left-0 z-20 whitespace-nowrap rounded-md px-2.5 py-1.5 text-[12px] leading-none shadow-lg transition-opacity duration-150 motion-reduce:transition-none"
+          style={{
+            opacity: active >= 0 ? 1 : 0,
+            background: "var(--color-foreground, #171717)",
+            color: "var(--color-background, #ffffff)",
+          }}
+        >
+          {cell ? (
+            <>
+              <strong className="font-semibold">{cell.count ? nf.format(cell.count) + " " + noun(cell.count) : "No " + plural}</strong>
+              <span className="opacity-75"> on {dfy.format(dayMs(cell.date))}</span>
+            </>
+          ) : (
+            " "
+          )}
+          <span
+            aria-hidden="true"
+            className="absolute top-full h-0 w-0"
+            style={{
+              left: "var(--arrow, 50%)",
+              marginLeft: -5,
+              borderLeft: "5px solid transparent",
+              borderRight: "5px solid transparent",
+              borderTop: "5px solid var(--color-foreground, #171717)",
+            }}
+          />
+        </div>
+        <p aria-live="polite" className="sr-only">
+          {announce}
+        </p>
+      </section>
+    )
+  }
 
   return (
     <section

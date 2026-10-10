@@ -72,6 +72,7 @@ Branch: `feat/skyline-world` · remote: https://github.com/TheRealLaksh/Portfoli
 
 ### Last 15 commits
 
+- `1a5add5` 2026-10-10 14:37 Clip sideways overflow instead of hiding it so sticky scenes pin
 - `df2c361` 2026-10-10 14:34 Drive the skyline morph from scroll
 - `649144a` 2026-10-10 14:31 Add real contribution data and an unlinked skyline lab page
 - `4a37ac3` 2026-10-10 14:31 Add the contribution skyline component
@@ -86,15 +87,11 @@ Branch: `feat/skyline-world` · remote: https://github.com/TheRealLaksh/Portfoli
 - `8355d36` 2026-05-19 12:59 Update chatbot hook endpoint linkage
 - `76936c9` 2026-02-01 17:41 update
 - `45e3901` 2026-01-25 07:46 fixes
-- `080e1b9` 2026-01-25 07:38 fix
 
 ### Uncommitted changes at refresh time
 
 ```
-M HANDOFF.md
-M  src/components/layout/Layout.jsx
- M src/components/world/ContributionSkyline.tsx
-M  src/index.css
- M src/pages/SkylineLab.jsx
+M  src/components/world/ContributionSkyline.tsx
+M  src/pages/SkylineLab.jsx
 ```
 <!-- handoff:auto:end -->
