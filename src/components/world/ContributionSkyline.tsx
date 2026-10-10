@@ -277,7 +277,12 @@ export type SkylineScene = {
   focusWeek?: number
   /** Close-up magnification relative to the whole-skyline fit. Defaults to 2.4. */
   flyZoom?: number
+  /** Index into the `markers` array you passed (not a filtered list) of the milestone the camera is stopped on; it gets a label. -1 for none. */
+  activeMarker?: number
 }
+
+/** A dated milestone drawn as a pin rising out of the skyline. */
+export type ContributionMarker = { date: string; label: string }
 
 export interface ContributionSkylineProps {
   /**
@@ -290,6 +295,9 @@ export interface ContributionSkylineProps {
   fly?: number
   focusWeek?: number
   flyZoom?: number
+  activeMarker?: number
+  /** Dated milestones drawn as pins on the skyline once it is up. Define the array outside render. */
+  markers?: ContributionMarker[]
   /**
    * Scene mode: no card, border, header, stats or legend. The canvas is transparent
    * and fills its container's height (give the parent a height), so the skyline can
@@ -482,6 +490,8 @@ export default function ContributionSkyline({
   fly: flyProp,
   focusWeek: focusWeekProp,
   flyZoom: flyZoomProp,
+  activeMarker: activeMarkerProp,
+  markers,
   sceneRef,
   bare = false,
   data,
@@ -537,7 +547,7 @@ export default function ContributionSkyline({
   const tipRef = React.useRef<HTMLDivElement>(null)
   const engine = React.useRef<{ kick: () => void; load: () => void; retheme: () => void; tipWidth: (w: number) => void } | null>(null)
   // Scroll-scene values live in a ref so a scroll handler can change them every frame without a React render.
-  const scene = React.useRef<SkylineScene>({ progress: progressProp, fly: flyProp, focusWeek: focusWeekProp, flyZoom: flyZoomProp })
+  const scene = React.useRef<SkylineScene>({ progress: progressProp, fly: flyProp, focusWeek: focusWeekProp, flyZoom: flyZoomProp, activeMarker: activeMarkerProp })
 
   const plural = unitPlural ?? unit + "s"
   const nf = React.useMemo(() => new Intl.NumberFormat(locale), [locale])
@@ -552,8 +562,8 @@ export default function ContributionSkyline({
   }
 
   // Everything the render loop reads, refreshed every render so the loop never closes over stale props.
-  const cfg = React.useRef({ model, duration, heightScale, orbit, palette, legendLevel, onCellClick, bare, target: view === "3d" ? 1 : 0, setActive, setWidth, setTheme, setAnnounce, describe })
-  cfg.current = { model, duration, heightScale, orbit, palette, legendLevel, onCellClick, bare, target: view === "3d" ? 1 : 0, setActive, setWidth, setTheme, setAnnounce, describe }
+  const cfg = React.useRef({ model, duration, heightScale, orbit, palette, legendLevel, onCellClick, bare, markers, target: view === "3d" ? 1 : 0, setActive, setWidth, setTheme, setAnnounce, describe })
+  cfg.current = { model, duration, heightScale, orbit, palette, legendLevel, onCellClick, bare, markers, target: view === "3d" ? 1 : 0, setActive, setWidth, setTheme, setAnnounce, describe }
 
   React.useEffect(() => {
     const root = rootRef.current
@@ -587,6 +597,8 @@ export default function ContributionSkyline({
     let gutter = 30
     let labelW = 30
     let font = "10px sans-serif"
+    let fam = "sans-serif"
+    let mk: { i: number; label: string; idx: number }[] = []
     // colours: [empty, l1, l2, l3, l4] × rgb, eased toward the goal
     const col = new Float32Array(15)
     const colGoal = new Float32Array(15)
@@ -641,6 +653,15 @@ export default function ContributionSkyline({
         hgt[i] = barHeight(c.count, m.max, cfg.current.heightScale)
       }
       months = m.months
+      // Milestones sit on the cell for their date; dates outside the shown year are dropped.
+      const at = new Map<string, number>()
+      for (let i = 0; i < n; i++) at.set(m.cells[i].date, i)
+      mk = []
+      const given = cfg.current.markers ?? []
+      for (let j = 0; j < given.length; j++) {
+        const i = at.get(toKey(dayMs(given[j].date)))
+        if (i != null) mk.push({ i, label: given[j].label, idx: j })
+      }
       const wf = new Intl.DateTimeFormat(locale, { weekday: "short", timeZone: "UTC" })
       weekdayRows = []
       for (let d = 0; d < 7 && d < n; d++) {
@@ -657,7 +678,8 @@ export default function ContributionSkyline({
       const b = toRGB(cs.backgroundColor, null)
       bg = b ?? (luminance(fg) > 0.5 ? [10, 10, 10] : BG_FALLBACK)
       isDark = luminance(bg) < 0.45
-      font = "400 10px " + (cs.fontFamily || "sans-serif")
+      fam = cs.fontFamily || "sans-serif"
+      font = "400 10px " + fam
       const pal = resolvePalette(cfg.current.palette, isDark)
       const empty = mixRGB(bg, fg, isDark ? 0.11 : 0.075)
       const all: RGB[] = [empty, ...pal.map((c) => toRGB(c, FG_FALLBACK) ?? FG_FALLBACK)]
@@ -904,6 +926,68 @@ export default function ContributionSkyline({
           if (x < edge || x + ctx.measureText(m.label).width > W) continue
           ctx.fillText(m.label, x, py(m.week + 0.5, 7.3, 0) + 2)
           edge = x + ctx.measureText(m.label).width + 10
+        }
+      }
+
+      // Milestone pins rise out of the skyline once it is up. The one the camera is stopped on gets a label;
+      // the rest show their label when the camera is close.
+      if (mk.length) {
+        const a = smoothstep(0.72, 1, e)
+        if (a > 0.004) {
+          const act = scene.current.activeMarker ?? -1
+          const near = smoothstep(0.3, 0.7, fly)
+          const accent = rgbString(col[12], col[13], col[14])
+          const ink = "rgb(" + Math.round(fg[0]) + "," + Math.round(fg[1]) + "," + Math.round(fg[2]) + ")"
+          const paper = "rgb(" + Math.round(bg[0]) + "," + Math.round(bg[1]) + "," + Math.round(bg[2]) + ")"
+          ctx.save()
+          ctx.globalAlpha = a
+          ctx.textBaseline = "middle"
+          ctx.textAlign = "left"
+          for (let k = 0; k < mk.length; k++) {
+            const i = mk[k].i
+            const bx = wk[i] + 0.5
+            const by = dy[i] + 0.5
+            const on = mk[k].idx === act
+            const z0 = zs[i]
+            const X = px(bx, by)
+            const Y0 = py(bx, by, z0)
+            const Y1 = py(bx, by, z0 + (on ? 5.2 : 3.6) * a)
+            if (X < -60 || X > W + 60 || Y0 < -40 || Y1 > Hmax + 40) continue
+            ctx.strokeStyle = on ? ink : "rgba(" + Math.round(fg[0]) + "," + Math.round(fg[1]) + "," + Math.round(fg[2]) + ",0.45)"
+            ctx.lineWidth = on ? 2 : 1.25
+            ctx.beginPath()
+            ctx.moveTo(X, Y0)
+            ctx.lineTo(X, Y1)
+            ctx.stroke()
+            ctx.beginPath()
+            ctx.arc(X, Y1, on ? 6 : 4, 0, Math.PI * 2)
+            ctx.fillStyle = accent
+            ctx.fill()
+            ctx.lineWidth = 2
+            ctx.strokeStyle = paper
+            ctx.stroke()
+            if (on) {
+              ctx.font = "600 13px " + fam
+              const tw = ctx.measureText(mk[k].label).width
+              const bw2 = tw + 20
+              const bx2 = Math.min(W - bw2 - 6, Math.max(6, X - bw2 / 2))
+              const by2 = Y1 - 30
+              ctx.fillStyle = ink
+              ctx.beginPath()
+              if (typeof ctx.roundRect === "function") ctx.roundRect(bx2, by2 - 13, bw2, 26, 8)
+              else ctx.rect(bx2, by2 - 13, bw2, 26)
+              ctx.fill()
+              ctx.fillStyle = paper
+              ctx.fillText(mk[k].label, bx2 + 10, by2 + 0.5)
+            } else if (near > 0.01) {
+              ctx.font = "500 11px " + fam
+              ctx.globalAlpha = a * near * 0.8
+              ctx.fillStyle = ink
+              ctx.fillText(mk[k].label, X + 8, Y1 - 10)
+              ctx.globalAlpha = a
+            }
+          }
+          ctx.restore()
         }
       }
 
@@ -1231,12 +1315,13 @@ export default function ContributionSkyline({
     scene.current.fly = flyProp
     scene.current.focusWeek = focusWeekProp
     scene.current.flyZoom = flyZoomProp
+    scene.current.activeMarker = activeMarkerProp
     engine.current?.kick()
-  }, [progressProp, flyProp, focusWeekProp, flyZoomProp])
+  }, [progressProp, flyProp, focusWeekProp, flyZoomProp, activeMarkerProp])
 
   React.useEffect(() => {
     engine.current?.load()
-  }, [model, heightScale])
+  }, [model, heightScale, markers])
 
   React.useEffect(() => {
     engine.current?.retheme()

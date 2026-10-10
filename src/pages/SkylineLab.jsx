@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ContributionSkyline from '../components/world/ContributionSkyline';
 import contributions from '../data/contributions.json';
+import { milestones } from '../data/milestones';
 
 // Unlinked development page for the 3D world. Not part of the public navigation.
 const themeVars = {
@@ -10,10 +11,36 @@ const themeVars = {
   '--color-muted-foreground': '#a3a3a3',
 };
 
-const WEEKS = Math.ceil(contributions.days.length / 7);
+const DAY = 86400000;
 const smooth = (a, b, x) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
   return t * t * (3 - 2 * t);
+};
+
+// Week column of a date, using the same grid rule as the component: the grid ends on the
+// last day of data and starts on the Sunday on or before the day 364 days earlier.
+const utc = (s) => Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10));
+const endMs = utc(contributions.days[contributions.days.length - 1].date);
+let startMs = endMs - 364 * DAY;
+startMs -= new Date(startMs).getUTCDay() * DAY;
+const weekOf = (date) => (utc(date) - startMs) / DAY / 7;
+
+// Only milestones inside the shown year can be pinned.
+const stops = milestones
+  .map((m, i) => ({ ...m, index: i, week: Math.floor(weekOf(m.date)) }))
+  .filter((m) => utc(m.date) >= startMs && utc(m.date) <= endMs)
+  .sort((a, b) => a.week - b.week);
+
+// Camera path for the travel phase u in [0, 1]: stop on each milestone, then glide to the next.
+const travel = (u) => {
+  const n = stops.length;
+  const x = Math.min(0.9999, Math.max(0, u)) * n;
+  const k = Math.floor(x);
+  const local = x - k;
+  const dwell = 0.5;
+  if (local < dwell || k === n - 1) return { week: stops[k].week + 0.5, active: stops[k].index };
+  const t = smooth(dwell, 1, local);
+  return { week: stops[k].week + 0.5 + (stops[k + 1].week - stops[k].week) * t, active: -1 };
 };
 
 // Scene preview: a tall scroll track with a sticky full-height stage. Scroll position
@@ -31,10 +58,12 @@ const ScenePreview = () => {
       const p = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
       // One scroll track, three moves: the skyline rises, the camera drops in, then it
       // travels along the weeks from the oldest to the newest.
+      const cam = travel((p - 0.45) / 0.55);
       sceneRef.current?.set({
         progress: smooth(0, 0.3, p),
         fly: smooth(0.25, 0.45, p),
-        focusWeek: WEEKS * Math.min(1, Math.max(0, (p - 0.45) / 0.55)),
+        focusWeek: cam.week,
+        activeMarker: p > 0.45 ? cam.active : -1,
       });
     };
     onScroll();
@@ -49,7 +78,7 @@ const ScenePreview = () => {
   return (
     <div ref={trackRef} className="relative w-full" style={{ height: '700vh' }}>
       <div className="sticky top-0 h-screen w-full">
-        <ContributionSkyline bare data={contributions.days} sceneRef={sceneRef} progress={0} />
+        <ContributionSkyline bare data={contributions.days} markers={milestones} sceneRef={sceneRef} progress={0} />
       </div>
     </div>
   );
