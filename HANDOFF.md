@@ -37,6 +37,7 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 5. Optionally replace `public/og-image.jpg` with a designed 1200x630 image (the current one is a cropped screenshot of the hero).
 
 ## Open questions / waiting on
+- Decide whether to add the `/resume` redirect to `vercel.json` (currently only in the dead-on-Vercel `netlify.toml`); it should point at https://profiley.lakshpradhwani.com/laksh.
 - Laksh's 3-5 reference links for the 3D world (requested 10 Oct 2026).
 - Approve or edit the draft milestone list in `src/data/milestones.js`; client names need permission.
 - GitHub only counts private-repo commits if "Include private contributions" is on in his profile settings; the quiet stretches in the skyline (for example around the ShiftsDeal start) may be private work. Check before presenting the graph as his full activity.
@@ -52,6 +53,7 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 - No AI-generated photos or laptop-on-desk hero. No fake stats: only real GitHub data, never the component demo's sample numbers.
 
 ## Session log (newest first)
+- 2026-10-10: added `vercel.json` with an SPA rewrite so deep links (`/lab/skyline`, `/booking`) work on Vercel; before this, direct visits to any route returned 404 (live `/booking` was 404). Existing files are still served first. Note: the `/resume` redirect only exists in `netlify.toml`, so it does not work on Vercel.
 - 2026-10-10: milestone pins in `ContributionSkyline.tsx` (`markers` prop `{ date, label }`, `activeMarker` index into that array; pins rise after the skyline is up, the active one gets a label pill). Added DRAFT `src/data/milestones.js` (7 milestones from the vault timeline, needs Laksh's approval) and the lab scroll track now stops the camera on each milestone.
 - 2026-10-10: camera fly-along in `ContributionSkyline.tsx`: `fly` (0 whole skyline, 1 close-up), `focusWeek`, `flyZoom` (default 2.4) via props or `sceneRef.set`; off-screen cells are skipped when flying. `/lab/skyline` preview scroll track is now 700vh: rise, drop in, travel along the weeks.
 - 2026-10-10: `ContributionSkyline` gets a `bare` mode (transparent, no card, fills its container) and the lab page a sticky scroll-scene preview that drives it.
@@ -71,12 +73,13 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 <!-- handoff:auto:start -->
 ## Auto: repo state
 
-_Refreshed 10 Oct 2026, 2:42 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
+_Refreshed 10 Oct 2026, 2:43 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
 
 Branch: `feat/skyline-world` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 
 ### Last 15 commits
 
+- `e5d48ea` 2026-10-10 14:42 Add milestone pins to the skyline
 - `801e9f1` 2026-10-10 14:39 Add a camera fly-along to the skyline
 - `a804337` 2026-10-10 14:37 Add a bare full-bleed mode to the skyline
 - `1a5add5` 2026-10-10 14:37 Clip sideways overflow instead of hiding it so sticky scenes pin
@@ -91,14 +94,11 @@ Branch: `feat/skyline-world` · remote: https://github.com/TheRealLaksh/Portfoli
 - `2d7b824` 2026-10-09 00:32 Use work@lakshpradhwani.com as the contact address
 - `f536175` 2026-10-08 23:58 Point site URLs at lakshpradhwani.com
 - `b2507a1` 2026-10-08 23:57 Add HANDOFF.md and handoff hooks
-- `8355d36` 2026-05-19 12:59 Update chatbot hook endpoint linkage
 
 ### Uncommitted changes at refresh time
 
 ```
 M  HANDOFF.md
-M  src/components/world/ContributionSkyline.tsx
-A  src/data/milestones.js
-M  src/pages/SkylineLab.jsx
+A  vercel.json
 ```
 <!-- handoff:auto:end -->
