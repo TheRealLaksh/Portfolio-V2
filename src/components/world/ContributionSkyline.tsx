@@ -271,6 +271,12 @@ type View = "2d" | "3d"
 export type SkylineScene = {
   /** 0 → 1 drives the flat → skyline morph directly. `undefined` hands control back to the timer. */
   progress?: number
+  /** Camera fly-along: 0 shows the whole skyline, 1 is a close-up of `focusWeek`. */
+  fly?: number
+  /** Week column (0 = oldest week) the close-up camera looks at. May be fractional. */
+  focusWeek?: number
+  /** Close-up magnification relative to the whole-skyline fit. Defaults to 2.4. */
+  flyZoom?: number
 }
 
 export interface ContributionSkylineProps {
@@ -280,6 +286,10 @@ export interface ContributionSkylineProps {
    * "rises when first seen" behaviour. Prefer `sceneRef` for per-frame updates.
    */
   progress?: number
+  /** Camera fly-along values, see `SkylineScene`. Prefer `sceneRef` for per-frame updates. */
+  fly?: number
+  focusWeek?: number
+  flyZoom?: number
   /**
    * Scene mode: no card, border, header, stats or legend. The canvas is transparent
    * and fills its container's height (give the parent a height), so the skyline can
@@ -469,6 +479,9 @@ function Stat({
 
 export default function ContributionSkyline({
   progress: progressProp,
+  fly: flyProp,
+  focusWeek: focusWeekProp,
+  flyZoom: flyZoomProp,
   sceneRef,
   bare = false,
   data,
@@ -524,7 +537,7 @@ export default function ContributionSkyline({
   const tipRef = React.useRef<HTMLDivElement>(null)
   const engine = React.useRef<{ kick: () => void; load: () => void; retheme: () => void; tipWidth: (w: number) => void } | null>(null)
   // Scroll-scene values live in a ref so a scroll handler can change them every frame without a React render.
-  const scene = React.useRef<SkylineScene>({ progress: progressProp })
+  const scene = React.useRef<SkylineScene>({ progress: progressProp, fly: flyProp, focusWeek: focusWeekProp, flyZoom: flyZoomProp })
 
   const plural = unitPlural ?? unit + "s"
   const nf = React.useMemo(() => new Intl.NumberFormat(locale), [locale])
@@ -739,10 +752,23 @@ export default function ContributionSkyline({
       const ah = Hc - top - pad
       const bw = Math.max(1e-6, b.maxx - b.minx)
       const bh = Math.max(1e-6, b.maxy - b.miny)
-      const s = Math.min(aw / bw, ah / bh)
-      const ox = left + (aw - bw * s) / 2 - b.minx * s
-      const oy = top + (ah - bh * s) / 2 - b.miny * s
       const { cs, sn, se, ce } = cam
+      let s = Math.min(aw / bw, ah / bh)
+      let ox = left + (aw - bw * s) / 2 - b.minx * s
+      let oy = top + (ah - bh * s) / 2 - b.miny * s
+      // Fly-along: blend from the whole-skyline fit to a close-up centred on one week.
+      const fly = clamp01(scene.current.fly ?? 0)
+      if (fly > 0.0005 && weeks) {
+        const s2 = s * lerp(1, scene.current.flyZoom ?? 2.4, fly)
+        const fx = Math.min(weeks, Math.max(0, scene.current.focusWeek ?? weeks / 2)) + 0.5
+        const fy = 3.5
+        // Look slightly above the ground line so the bars rise into the upper half of the frame.
+        const oxF = left + aw / 2 - (fx * cs - fy * sn) * s2
+        const oyF = top + ah * 0.66 - (fx * sn + fy * cs) * se * s2
+        ox = lerp(ox, oxF, fly)
+        oy = lerp(oy, oyF, fly)
+        s = s2
+      }
       const px = (x: number, y: number) => ox + (x * cs - y * sn) * s
       const py = (x: number, y: number, z: number) => oy + ((x * sn + y * cs) * se - z * ce) * s
 
@@ -789,6 +815,18 @@ export default function ContributionSkyline({
         if (tall > 0.35 && w * cs * s > 0.35) f |= 1
         if (tall > 0.35 && w * sn * s > 0.35) f |= 2
         faces[i] = f
+
+        // A close-up camera leaves most of the skyline off-canvas; skip what can't be seen.
+        if (fly > 0.001) {
+          const xa = Math.min(polys[o], polys[o + 2], polys[o + 4], polys[o + 6], polys[o + 8], polys[o + 16])
+          const xb = Math.max(polys[o], polys[o + 2], polys[o + 4], polys[o + 6], polys[o + 10], polys[o + 18])
+          const ya = Math.min(polys[o + 1], polys[o + 3], polys[o + 5], polys[o + 7])
+          const yb = Math.max(polys[o + 5], polys[o + 7], polys[o + 9], polys[o + 11], polys[o + 17])
+          if (xb < -24 || xa > W + 24 || yb < -24 || ya > Hmax + 24) {
+            faces[i] = 0
+            continue
+          }
+        }
 
         const L = lv[i] * 3
         let r = col[L]
@@ -1190,8 +1228,11 @@ export default function ContributionSkyline({
   // Declarative scroll control: a changed `progress` prop feeds the same ref `sceneRef.set` writes to.
   React.useEffect(() => {
     scene.current.progress = progressProp
+    scene.current.fly = flyProp
+    scene.current.focusWeek = focusWeekProp
+    scene.current.flyZoom = flyZoomProp
     engine.current?.kick()
-  }, [progressProp])
+  }, [progressProp, flyProp, focusWeekProp, flyZoomProp])
 
   React.useEffect(() => {
     engine.current?.load()

@@ -10,6 +10,12 @@ const themeVars = {
   '--color-muted-foreground': '#a3a3a3',
 };
 
+const WEEKS = Math.ceil(contributions.days.length / 7);
+const smooth = (a, b, x) => {
+  const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+};
+
 // Scene preview: a tall scroll track with a sticky full-height stage. Scroll position
 // maps to the morph progress, which is how the real film chapters will work.
 const ScenePreview = () => {
@@ -23,7 +29,13 @@ const ScenePreview = () => {
       const r = el.getBoundingClientRect();
       const total = r.height - window.innerHeight;
       const p = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
-      sceneRef.current?.set({ progress: p });
+      // One scroll track, three moves: the skyline rises, the camera drops in, then it
+      // travels along the weeks from the oldest to the newest.
+      sceneRef.current?.set({
+        progress: smooth(0, 0.3, p),
+        fly: smooth(0.25, 0.45, p),
+        focusWeek: WEEKS * Math.min(1, Math.max(0, (p - 0.45) / 0.55)),
+      });
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -35,7 +47,7 @@ const ScenePreview = () => {
   }, []);
 
   return (
-    <div ref={trackRef} className="relative w-full" style={{ height: '300vh' }}>
+    <div ref={trackRef} className="relative w-full" style={{ height: '700vh' }}>
       <div className="sticky top-0 h-screen w-full">
         <ContributionSkyline bare data={contributions.days} sceneRef={sceneRef} progress={0} />
       </div>

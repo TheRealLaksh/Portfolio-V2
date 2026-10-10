@@ -30,7 +30,7 @@ Built so far: `src/components/world/ContributionSkyline.tsx` (MIT component by K
 Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resume link) now use lakshpradhwani.com. The contact address is now `work@lakshpradhwani.com` (Cloudflare Email Routing forwards it to Laksh's Gmail). Remaining: the resume PDF. `npm run build` passes (10 Oct 2026). `node_modules` is installed with `npm install --no-package-lock`, because `npm ci` fails: `package-lock.json` is out of sync with `package.json` (lock has vite 7 / react-router 7, package.json says vite 5 / react-router 6). Do not rewrite the lock without checking what Vercel installs.
 
 ## Next steps
-1. Adapt the skyline for the film (scroll-driven `progress` is done): a camera zoom/pan that flies along the weeks, a bare full-bleed mode with a transparent canvas, milestone markers drawn on the skyline, and a custom palette. Then place it as a chapter once the world design is agreed.
+1. Adapt the skyline for the film (scroll `progress`, `bare` mode and the `fly`/`focusWeek` camera are done): milestone markers drawn on the skyline, and a custom palette. Then place it as a chapter once the world design is agreed.
 2. Wait for Laksh's reference sites before designing the rest of the world; collect: updated pricing numbers, a curated milestone list, ShiftsDeal permission for screenshots.
 3. Refresh `src/data/contributions.json` automatically (daily GitHub Action) instead of by hand; keep it real data only.
 4. Regenerate `src/assets/resume/laksh.pradhwani.resume.pdf`: it contains the link `https://www.lakshp.live/` (export again from Profiley once its default portfolio link is updated).
@@ -49,6 +49,7 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 - No AI-generated photos or laptop-on-desk hero. No fake stats: only real GitHub data, never the component demo's sample numbers.
 
 ## Session log (newest first)
+- 2026-10-10: camera fly-along in `ContributionSkyline.tsx`: `fly` (0 whole skyline, 1 close-up), `focusWeek`, `flyZoom` (default 2.4) via props or `sceneRef.set`; off-screen cells are skipped when flying. `/lab/skyline` preview scroll track is now 700vh: rise, drop in, travel along the weeks.
 - 2026-10-10: `ContributionSkyline` gets a `bare` mode (transparent, no card, fills its container) and the lab page a sticky scroll-scene preview that drives it.
 - 2026-10-10: `src/index.css` body and `Layout.jsx` wrapper use `overflow-x: clip` instead of `hidden` (body also `overflow-y: visible`). `hidden` made them scroll containers, which stopped `position: sticky` pinned scenes from working. Checked no sideways scroll on `/` at 1280 and 375 px.
 - 2026-10-10: `ContributionSkyline.tsx` now takes `progress` (0 to 1) or a `sceneRef.set({ progress })` handle so scroll drives the flat-to-skyline morph; the timer still works when `progress` is undefined. `/lab/skyline` has a scroll slider to test it.
@@ -66,12 +67,13 @@ Migrating off the expired lakshp.live. URLs (meta tags, `/resume` redirect, resu
 <!-- handoff:auto:start -->
 ## Auto: repo state
 
-_Refreshed 10 Oct 2026, 2:37 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
+_Refreshed 10 Oct 2026, 2:39 pm IST by `scripts/handoff.mjs` (runs on every commit). Don't edit inside this block._
 
 Branch: `feat/skyline-world` · remote: https://github.com/TheRealLaksh/Portfolio-V2.git
 
 ### Last 15 commits
 
+- `a804337` 2026-10-10 14:37 Add a bare full-bleed mode to the skyline
 - `1a5add5` 2026-10-10 14:37 Clip sideways overflow instead of hiding it so sticky scenes pin
 - `df2c361` 2026-10-10 14:34 Drive the skyline morph from scroll
 - `649144a` 2026-10-10 14:31 Add real contribution data and an unlinked skyline lab page
@@ -86,11 +88,11 @@ Branch: `feat/skyline-world` · remote: https://github.com/TheRealLaksh/Portfoli
 - `b2507a1` 2026-10-08 23:57 Add HANDOFF.md and handoff hooks
 - `8355d36` 2026-05-19 12:59 Update chatbot hook endpoint linkage
 - `76936c9` 2026-02-01 17:41 update
-- `45e3901` 2026-01-25 07:46 fixes
 
 ### Uncommitted changes at refresh time
 
 ```
+M  HANDOFF.md
 M  src/components/world/ContributionSkyline.tsx
 M  src/pages/SkylineLab.jsx
 ```
