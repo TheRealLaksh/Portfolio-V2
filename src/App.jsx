@@ -7,6 +7,7 @@ import 'aos/dist/aos.css';
 
 import Home from './pages/Home';
 import Booking from './components/sections/Booking';
+import SkylineLab from './pages/SkylineLab';
 
 function App() {
   const location = useLocation();
@@ -52,6 +53,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/booking" element={<Booking />} />
           <Route path="/bookings" element={<Navigate to="/booking" replace />} />
+          <Route path="/lab/skyline" element={<SkylineLab />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
           
